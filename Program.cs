@@ -4,14 +4,13 @@ namespace Desafio_01
 {
     public class Program
     {
-        public static void Main(string[] args) 
+        public static void Main(string[] args)
         {
-            var geradorAlfanumerico = new GeradorStringAlfanumerico();
             int comprimentoDesejado = 6;
-            string alfanumericoAleatoriaA = geradorAlfanumerico.GerarStringAlfanmerico(comprimentoDesejado);
-            string alfanumericoAleatoriaB = geradorAlfanumerico.GerarStringAlfanmerico(comprimentoDesejado);
-            string alfanumericoAleatoriaC = geradorAlfanumerico.GerarStringAlfanmerico(comprimentoDesejado);
-            string alfanumericoAleatoriaD = geradorAlfanumerico.GerarStringAlfanmerico(comprimentoDesejado);
+            string alfanumericoAleatoriaA = GeradorStringAlfanumerico.GerarStringAlfanmerico(comprimentoDesejado);
+            string alfanumericoAleatoriaB = GeradorStringAlfanumerico.GerarStringAlfanmerico(comprimentoDesejado);
+            string alfanumericoAleatoriaC = GeradorStringAlfanumerico.GerarStringAlfanmerico(comprimentoDesejado);
+            string alfanumericoAleatoriaD = GeradorStringAlfanumerico.GerarStringAlfanmerico(comprimentoDesejado);
 
             var parametrosJSON = new ParametrosJSON
             {
@@ -21,10 +20,12 @@ namespace Desafio_01
                 D = alfanumericoAleatoriaD
             };
 
-            string jsonString = JsonSerializer.Serialize<ParametrosJSON>(parametrosJSON);
+            string jsonString = JsonSerializer.Serialize(parametrosJSON);
 
-            Console.WriteLine(jsonString);
+            string caminhoCompleto = Path.Combine(diretorio, nomeArquivo);
+            File.WriteAllText(caminhoCompleto, jsonString);
 
+            Console.WriteLine($"Arquivo JSON criado em: {caminhoCompleto}");
         }
     }
 }

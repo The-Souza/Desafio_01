@@ -4,11 +4,11 @@ namespace Desafio_01
 {
     public class GeradorStringAlfanumerico
     {
-        public string GerarStringAlfanmerico(int comprimento)
+        public static string GerarStringAlfanmerico(int comprimento)
         {
             string caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             Random random = new();
-            StringBuilder alfanumerico = new StringBuilder(comprimento);
+            StringBuilder alfanumerico = new(comprimento);
 
 
             for (int i = 0; i < comprimento; i++)

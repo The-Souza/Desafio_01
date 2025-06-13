@@ -1,5 +1,10 @@
 ﻿namespace Desafio_01
 {
+    public class Diretorio{
+        public string diretorio = @"C:\Users\guilherme2000925\source\repos\Desafio_01";
+        public string nomeArquivo = "parametrosAlfanumericos.json";
+    }
+
     public class ParametrosJSON
     {
         public string? A { get; set; }
