@@ -21,11 +21,10 @@ namespace Desafio_01
             };
 
             string jsonString = JsonSerializer.Serialize(parametrosJSON);
-
+            string nomeArquivo = Diretorio.nomeArquivo;
+            string diretorio = Diretorio.diretorio;
             string caminhoCompleto = Path.Combine(diretorio, nomeArquivo);
             File.WriteAllText(caminhoCompleto, jsonString);
-
-            Console.WriteLine($"Arquivo JSON criado em: {caminhoCompleto}");
         }
     }
 }
