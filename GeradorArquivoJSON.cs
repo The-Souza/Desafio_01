@@ -2,15 +2,17 @@
 
 namespace Desafio_01
 {
-    internal class GeradorArquivoJSON
+    public class GeradorArquivoJSON
     {
-        var identacao = new JsonSerializerOptions { WriteIndented = true };
-        string jsonString = JsonSerializer.Serialize(parametrosJSON, identacao);
-        Diretorio diretorio = new();
+        public void GerarArquivoJson(List<string> listaJSON)
+        {
+            JsonSerializerOptions identacao = new() { WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(listaJSON, identacao);
+            Diretorio diretorio = new();
 
-        string nomeArquivo = "parametrosAlfanumericos.json";
-        string raiz = diretorio.GetRaiz();
-        string caminhoCompleto = Path.Combine(raiz, nomeArquivo);
+            string nomeArquivo = "parametrosAlfanumericos.json";
+            string raiz = diretorio.GetRaiz();
+            string caminhoCompleto = Path.Combine(raiz, nomeArquivo);
 
             if (File.Exists(caminhoCompleto))
             {
@@ -22,5 +24,7 @@ namespace Desafio_01
             {
                 File.WriteAllText(caminhoCompleto, jsonString);
                 Console.WriteLine("Serialização B do arquivo completa");
+            }
+        }
     }
 }

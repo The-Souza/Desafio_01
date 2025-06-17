@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using System.IO;
+﻿using System.Collections.Generic;
 
 namespace Desafio_01
 {
@@ -9,14 +8,25 @@ namespace Desafio_01
         {
             try 
             {
+                GeradorArquivoJSON geradorArquivoJSON = new();
+                GeradorListaAlfanumerica geradorListaAlfanumerica = new();
 
-            } catch (Exception ex) 
+                List<ParametrosJSON> listaParametrosJSON = geradorListaAlfanumerica.GerarListaAlfanumerica();
+
+                //foreach (ParametrosJSON parametrosJSON in listaParametrosJSON)
+                //{
+                //    Console.WriteLine($"Parametros {parametrosJSON.letras}: {parametrosJSON.parametros}");
+                //}
+
+                geradorArquivoJSON.GerarArquivoJson(listaParametrosJSON)
+            } 
+            catch (Exception ex) 
             {
                 Console.WriteLine($"Exception: {ex.Message}");
             }
             finally 
             {
-                Console.WriteLine("Correu tudo bem!");
+                Console.WriteLine("\nCorreu tudo bem!");
             }
         }
     }
