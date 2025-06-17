@@ -14,19 +14,20 @@ namespace Desafio_01
             string jsonString = JsonSerializer.Serialize(listaParametrosJSON, identacao);
 
             string nomeArquivo = "listaAlfanumericos.json";
-            string raiz = diretorio.GetRaiz();
-            string caminhoCompleto = Path.Combine(raiz, nomeArquivo);
+            string pastaRaiz = diretorio.GetRaiz();
+            string caminhoCompleto = Path.Combine(pastaRaiz, nomeArquivo);
 
             if (File.Exists(caminhoCompleto))
             {
-                File.Delete(caminhoCompleto);
-                File.AppendAllText(caminhoCompleto, jsonString);
-                Console.WriteLine("Serialização A do arquivo completa");
+                StreamWriter streamWriterFalse = new(caminhoCompleto, false);
+                streamWriterFalse.Write(jsonString);
+                streamWriterFalse.Close();
             }
             else
             {
-                File.WriteAllText(caminhoCompleto, jsonString);
-                Console.WriteLine("Serialização B do arquivo completa");
+                StreamWriter streamWriterTrue = new(caminhoCompleto, true); 
+                streamWriterTrue.Write(jsonString);
+                streamWriterTrue.Close();
             }
         }
     }

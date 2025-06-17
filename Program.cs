@@ -15,7 +15,7 @@
             }
             finally 
             {
-                Console.WriteLine("\nCorreu tudo bem!");
+                Console.WriteLine("Correu tudo bem!");
             }
         }
     }
