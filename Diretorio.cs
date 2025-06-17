@@ -4,9 +4,6 @@
     {
         private const string raiz = @"C:\Users\guilherme2000925\source\repos\Desafio_01";
 
-        public string GetRaiz()
-        {
-            return raiz;
-        }
+        public string GetRaiz() => raiz;
     }
 }

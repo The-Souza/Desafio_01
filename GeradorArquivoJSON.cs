@@ -4,13 +4,16 @@ namespace Desafio_01
 {
     public class GeradorArquivoJSON
     {
-        public void GerarArquivoJson(List<string> listaJSON)
+        public void GerarArquivoJson()
         {
-            JsonSerializerOptions identacao = new() { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(listaJSON, identacao);
+            GeradorListaAlfanumerica geradorListaAlfanumerica = new();
             Diretorio diretorio = new();
+            List<ParametrosJSON> listaParametrosJSON = geradorListaAlfanumerica.GerarListaAlfanumerica();
 
-            string nomeArquivo = "parametrosAlfanumericos.json";
+            JsonSerializerOptions identacao = new() { WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(listaParametrosJSON, identacao);
+
+            string nomeArquivo = "listaAlfanumericos.json";
             string raiz = diretorio.GetRaiz();
             string caminhoCompleto = Path.Combine(raiz, nomeArquivo);
 

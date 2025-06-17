@@ -1,14 +1,10 @@
 ﻿namespace Desafio_01
 {
-    public class ParametrosJSON
+    public class ParametrosJSON(string A, string B, string C, string D)
     {
-        public string? letras { get; set; }
-        public string? parametros { get; set; }
-        
-        public ParametrosJSON(string letras, string parametros) 
-        {
-            this.letras = letras;
-            this.parametros = parametros;
-        }
+        public string? A { get; set; } = A;
+        public string? B { get; set; } = B;
+        public string? C { get; set; } = C;
+        public string? D { get; set; } = D;
     }
 }
