@@ -13,10 +13,6 @@
             {
                 Console.WriteLine($"Exception: {ex.Message}");
             }
-            finally 
-            {
-                Console.WriteLine("Correu tudo bem!");
-            }
         }
     }
 }
