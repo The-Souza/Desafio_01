@@ -8,12 +8,14 @@
             {
                 Diretorio diretorio = new();
                 GeradorArquivoJSON geradorArquivoJSON = new();
+                TamanhoArquivo valorTamanho = new();
 
+                int tamanhoArquivo = valorTamanho.GerarTamanhoArquivo();
                 string nomeArquivo = "listaAlfanumericos.json";
                 string pastaRaiz = diretorio.GetRaiz();
                 string caminhoCompleto = Path.Combine(pastaRaiz, nomeArquivo);
 
-                geradorArquivoJSON.GerarArquivoJson(caminhoCompleto);
+                geradorArquivoJSON.GerarArquivoJson(caminhoCompleto, tamanhoArquivo);
             }
             catch (Exception ex)
             {

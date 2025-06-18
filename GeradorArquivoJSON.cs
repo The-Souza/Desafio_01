@@ -4,10 +4,11 @@ namespace Desafio_01
 {
     public class GeradorArquivoJSON
     {
-        public void GerarArquivoJson(string pastaDestino)
+        public void GerarArquivoJson(string pastaDestino, int tamanhoArquivoDesejado)
         {
             GeradorListaAlfanumerica geradorListaAlfanumerica = new();
-            List<ParametrosJSON> listaParametrosJSON = geradorListaAlfanumerica.GerarListaAlfanumerica();
+            List<ParametrosJSON> listaParametrosJSON = geradorListaAlfanumerica.GerarListaAlfanumerica(tamanhoArquivoDesejado);
+
             JsonSerializerOptions identacao = new() { WriteIndented = true };
             string jsonString = JsonSerializer.Serialize(listaParametrosJSON, identacao);
 
@@ -17,18 +18,14 @@ namespace Desafio_01
 
             double limiteMaximoEmMB = 400.00;
             double limiteComTolerancia = limiteMaximoEmMB + (limiteMaximoEmMB / 100);
-            if (jsonEmMbFormatado > limiteComTolerancia)
+            if (jsonEmMbFormatado < limiteComTolerancia)
             {
-                Console.WriteLine($"O arquivo JSON excede o limite de {limiteComTolerancia}MB.");
-            }
-            else
-            {
-                Console.WriteLine($"Tamanho do arquivo JSON: {jsonEmMbFormatado} MB");
+                Console.WriteLine($"\nTamanho do arquivo JSON: {jsonEmMbFormatado}MB");
                 if (File.Exists(pastaDestino))
                 {
-                    StreamWriter arquivoJsonReescrito = new(pastaDestino, false);
-                    arquivoJsonReescrito.Write(jsonString);
-                    arquivoJsonReescrito.Close();
+                    StreamWriter arquivoJsonAtualizado = new(pastaDestino, false);
+                    arquivoJsonAtualizado.Write(jsonString);
+                    arquivoJsonAtualizado.Close();
                     Console.WriteLine("\nArquivo JSON atualizado.");
                 }
                 else
@@ -38,6 +35,11 @@ namespace Desafio_01
                     arquivoJson.Close();
                     Console.WriteLine("\nArquivo JSON criado.");
                 }
+            }
+            else
+            {
+                Console.WriteLine($"\nO arquivo JSON excede o limite de {limiteComTolerancia}MB.");
+                Console.WriteLine($"\nTamanho do arquivo JSON: {jsonEmMbFormatado}MB");
             }
 
         }

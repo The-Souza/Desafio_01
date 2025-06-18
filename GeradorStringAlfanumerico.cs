@@ -4,12 +4,7 @@ namespace Desafio_01
 {
     public class GeradorStringAlfanumerico
     {
-        private string? AlfanumericoAleatoriaA { get; set; }
-        private string? AlfanumericoAleatoriaB { get; set; }
-        private string? AlfanumericoAleatoriaC { get; set; }
-        private string? AlfanumericoAleatoriaD { get; set; }
-
-        public string GerarStringAlfanmerico()
+        public string GerarStringAlfanumerico()
         {
             int comprimento = 6;
             string caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -24,28 +19,10 @@ namespace Desafio_01
             return alfanumerico.ToString();
         }
 
-        public string GetAlfanumericoAleatoriaA()
+        public string GetAlfanumericoAleatoria()
         {
-            string alfanumericoAleatoriaA = GerarStringAlfanmerico();
-            return alfanumericoAleatoriaA;
-        }
-
-        public string GetAlfanumericoAleatoriaB()
-        {
-            string alfanumericoAleatoriaB = GerarStringAlfanmerico();
-            return alfanumericoAleatoriaB;
-        }
-
-        public string GetAlfanumericoAleatoriaC()
-        {
-            string alfanumericoAleatoriaC = GerarStringAlfanmerico();
-            return alfanumericoAleatoriaC;
-        }
-
-        public string GetAlfanumericoAleatoriaD()
-        {
-            string alfanumericoAleatoriaD = GerarStringAlfanmerico();
-            return alfanumericoAleatoriaD;
+            string alfanumericoAleatoria = GerarStringAlfanumerico();
+            return alfanumericoAleatoria;
         }
     }
 }
