@@ -7,7 +7,8 @@
             GeradorStringAlfanumerico geradorStringAlfanumerico = new();
             List<ParametrosJSON> parametrosJSON = new();
 
-            for (int i = 0; i < 4670000; i++)
+            int quantidadeLoop = 4670000;
+            for (int i = 0; i < quantidadeLoop; i++)
             {
                 string listaParametroA = geradorStringAlfanumerico.GetAlfanumericoAleatoriaA();
                 string listaParametroB = geradorStringAlfanumerico.GetAlfanumericoAleatoriaB();
