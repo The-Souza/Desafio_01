@@ -1,4 +1,6 @@
-﻿namespace Desafio_01
+﻿using System;
+
+namespace Desafio_01
 {
     public class TamanhoArquivo
     {
@@ -12,21 +14,7 @@
                 Console.Clear();
             } while (string.IsNullOrEmpty(valorStringTamanhoArquivo));
 
-            Console.WriteLine("Digite o tamanho do arquivo desejado");
-            Console.WriteLine(valorStringTamanhoArquivo);
-
-            bool n = true;
-            while (n == true)
-            {
-                if (valorStringTamanhoArquivo != string.Empty)
-                {
-                    n = false;
-                }
-                else
-                {
-                    break;
-                }
-            }
+            Console.WriteLine($"Tamanho escolhido: {valorStringTamanhoArquivo}MB");
 
             int valorIntTamanhoArquivo = Convert.ToInt32(valorStringTamanhoArquivo);
             return valorIntTamanhoArquivo;
