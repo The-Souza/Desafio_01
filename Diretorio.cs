@@ -2,8 +2,40 @@
 {
     public class Diretorio
     {
-        private const string raiz = @"C:\Users\guilherme2000925\Desktop\Pasta Destino";
+        public string CaminhoDeSaida()
+        {
+            string valorStringDiretorio;
+            do { 
+                Console.WriteLine("Escolha o local onde o arquivo será criado:");
+                valorStringDiretorio = Console.ReadLine() ?? string.Empty;
+                Console.Clear();
+            } while (string.IsNullOrEmpty(valorStringDiretorio));
 
-        public string GetRaiz() => raiz;
+            Console.WriteLine("Escolha o local onde o arquivo será criado:");
+            Console.WriteLine(valorStringDiretorio);
+
+            bool n = true;
+            while (n == true)
+            {
+                if (valorStringDiretorio != string.Empty)
+                {
+                    if (Directory.Exists(valorStringDiretorio))
+                    {
+                        Console.WriteLine($"\nO diretório '{valorStringDiretorio}' existe.\n");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\nO diretório '{valorStringDiretorio}' não existe.\n");
+                    }
+                    n = false;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return valorStringDiretorio;
+
+        }
     }
 }

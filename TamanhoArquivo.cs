@@ -4,13 +4,21 @@
     {
         public int GerarTamanhoArquivo()
         {
-            Console.WriteLine("Digite o tamanho do arquivo desejado: ");
-            var valorString = Console.ReadLine();
+            string valorStringTamanhoArquivo;
+            do
+            {
+                Console.WriteLine("Digite o tamanho do arquivo desejado");
+                valorStringTamanhoArquivo = Console.ReadLine() ?? string.Empty;
+                Console.Clear();
+            } while (string.IsNullOrEmpty(valorStringTamanhoArquivo));
+
+            Console.WriteLine("Digite o tamanho do arquivo desejado");
+            Console.WriteLine(valorStringTamanhoArquivo);
 
             bool n = true;
             while (n == true)
             {
-                if (valorString != string.Empty)
+                if (valorStringTamanhoArquivo != string.Empty)
                 {
                     n = false;
                 }
@@ -20,8 +28,8 @@
                 }
             }
 
-            int valorInt = Convert.ToInt32(valorString);
-            return valorInt;
+            int valorIntTamanhoArquivo = Convert.ToInt32(valorStringTamanhoArquivo);
+            return valorIntTamanhoArquivo;
         }
     }
 }
