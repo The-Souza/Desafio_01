@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Desafio_01
+﻿namespace Desafio_01
 {
     public class TamanhoArquivo
     {
@@ -17,6 +15,7 @@ namespace Desafio_01
             Console.WriteLine($"Tamanho escolhido: {valorStringTamanhoArquivo}MB");
 
             int valorIntTamanhoArquivo = Convert.ToInt32(valorStringTamanhoArquivo);
+
             return valorIntTamanhoArquivo;
         }
     }

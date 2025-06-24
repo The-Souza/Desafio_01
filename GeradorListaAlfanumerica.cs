@@ -7,7 +7,7 @@
             GeradorStringAlfanumerico geradorStringAlfanumerico = new();
             List<ParametrosJSON> parametrosJSON = new();
 
-            int loopEquivalente1MB = 11675;
+            int loopEquivalente1MB = 13500;
             int quantidadeLoop = tamanhoMB * loopEquivalente1MB;
             for (int i = 0; i < quantidadeLoop; i++)
             {
