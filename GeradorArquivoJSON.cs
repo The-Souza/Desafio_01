@@ -6,7 +6,6 @@ namespace Desafio_01
     {
         public void GerarArquivoJson(string pastaDestino, int tamanhoArquivoDesejado)
         {
-            VerTamanhoArquivo verTamanhoArquivo = new();
             JsonSerializerOptions identacao = new() { WriteIndented = true };
             GeradorListaAlfanumerica geradorListaAlfanumerica = new();
             List<ParametrosJSON> listaParametrosJSON = geradorListaAlfanumerica.GerarListaAlfanumerica(tamanhoArquivoDesejado);
@@ -18,31 +17,31 @@ namespace Desafio_01
             {
                 File.Delete(pastaDestino);
                 using (FileStream fileStream = new(pastaDestino, FileMode.Create))
+                {
+                    using (StreamWriter streamWriter = new(fileStream))
                     {
-                        using (StreamWriter streamWriter = new(fileStream))
+                        for (int i = 0; i < listaParametrosJSON.Count; i++)
                         {
-                            for (int i = 0; i < listaParametrosJSON.Count; i++)
-                            {
-                                string jsonString = JsonSerializer.Serialize(listaParametrosJSON[i], identacao);
-                                streamWriter.WriteLine(jsonString + (i < listaParametrosJSON.Count - 1 ? "," : ""));
-                            }
+                            string jsonString = JsonSerializer.Serialize(listaParametrosJSON[i], identacao);
+                            streamWriter.WriteLine(jsonString + (i < listaParametrosJSON.Count - 1 ? "," : ""));
                         }
                     }
+                }
                 Console.WriteLine("\nArquivo JSON atualizado.");
             }
-            else if(tamanhoArquivoDesejado < limiteComTolerancia)
+            else if (tamanhoArquivoDesejado < limiteComTolerancia)
             {
                 using (FileStream fileStream = new(pastaDestino, FileMode.Create))
+                {
+                    using (StreamWriter streamWriter = new(fileStream))
                     {
-                        using (StreamWriter streamWriter = new(fileStream))
+                        for (int i = 0; i < listaParametrosJSON.Count; i++)
                         {
-                            for (int i = 0; i < listaParametrosJSON.Count; i++)
-                            {
-                                string jsonString = JsonSerializer.Serialize(listaParametrosJSON[i], identacao);
-                                streamWriter.WriteLine(jsonString + (i < listaParametrosJSON.Count - 1 ? "," : "")); 
-                            }
+                            string jsonString = JsonSerializer.Serialize(listaParametrosJSON[i], identacao);
+                            streamWriter.WriteLine(jsonString + (i < listaParametrosJSON.Count - 1 ? "," : ""));
                         }
                     }
+                }
                 Console.WriteLine("\nArquivo JSON criado.");
             }
         }

@@ -9,7 +9,7 @@
                 //Pasta Destino => C:\Users\guilherme2000925\Desktop\Pasta Destino        
                 Diretorio diretorio = new();
                 GeradorArquivoJSON geradorArquivoJSON = new();
-                TamanhoArquivo valorTamanho = new();
+                DefinirTamanhoArquivo valorTamanho = new();
                 VerTamanhoArquivo verTamanhoArquivo = new();
 
                 string pastaDiretorio = diretorio.CaminhoDeSaida();

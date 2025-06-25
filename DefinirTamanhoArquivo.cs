@@ -1,6 +1,6 @@
 ﻿namespace Desafio_01
 {
-    public class TamanhoArquivo
+    public class DefinirTamanhoArquivo
     {
         public int GerarTamanhoArquivo()
         {
