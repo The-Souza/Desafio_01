@@ -9,15 +9,17 @@
                 //Pasta Destino => C:\Users\guilherme2000925\Desktop\Pasta Destino        
                 Diretorio diretorio = new();
                 GeradorArquivoJSON geradorArquivoJSON = new();
-                DefinirTamanhoArquivo valorTamanho = new();
+                GeradorListaAlfanumerica geradorListaAlfanumerica = new();
+                DefinirTamanhoArquivo definirTamanhoArquivo = new();
                 VerTamanhoArquivo verTamanhoArquivo = new();
 
                 string pastaDiretorio = diretorio.CaminhoDeSaida();
-                int tamanhoArquivo = valorTamanho.GerarTamanhoArquivo();
+                int tamanhoArquivo = definirTamanhoArquivo.GerarTamanhoArquivo();
                 string nomeArquivo = "listaAlfanumericos.json";
                 string caminhoCompleto = Path.Combine(pastaDiretorio, nomeArquivo);
 
-                geradorArquivoJSON.GerarArquivoJson(caminhoCompleto, tamanhoArquivo);
+                List<ParametrosJSON> listaParametrosJSON = geradorListaAlfanumerica.GerarListaAlfanumerica(tamanhoArquivo);
+                geradorArquivoJSON.GerarArquivoJson(listaParametrosJSON, tamanhoArquivo, caminhoCompleto);
                 verTamanhoArquivo.LimiteMaximoEmMB(caminhoCompleto, tamanhoArquivo);
             }
             catch (Exception ex)

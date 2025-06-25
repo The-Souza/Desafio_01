@@ -5,22 +5,21 @@
         public List<ParametrosJSON> GerarListaAlfanumerica(int tamanhoMB)
         {
             GeradorStringAlfanumerico geradorStringAlfanumerico = new();
-            List<ParametrosJSON> parametrosJSON = new();
 
-            int loopEquivalente1MB = 13500;
+            var parametrosJsonLoop = new List<ParametrosJSON>();
+            int loopEquivalente1MB = 11655;
             int quantidadeLoop = tamanhoMB * loopEquivalente1MB;
             for (int i = 0; i < quantidadeLoop; i++)
             {
-                string listaParametroA = geradorStringAlfanumerico.GetAlfanumericoAleatoria();
-                string listaParametroB = geradorStringAlfanumerico.GetAlfanumericoAleatoria();
-                string listaParametroC = geradorStringAlfanumerico.GetAlfanumericoAleatoria();
-                string listaParametroD = geradorStringAlfanumerico.GetAlfanumericoAleatoria();
-
-                ParametrosJSON parametrosJsons = new(listaParametroA, listaParametroB, listaParametroC, listaParametroD);
-
-                parametrosJSON.Add(parametrosJsons);
+                parametrosJsonLoop.Add(new ParametrosJSON 
+                { 
+                    A = geradorStringAlfanumerico.GetAlfanumericoAleatoria(), 
+                    B = geradorStringAlfanumerico.GetAlfanumericoAleatoria(), 
+                    C = geradorStringAlfanumerico.GetAlfanumericoAleatoria(), 
+                    D = geradorStringAlfanumerico.GetAlfanumericoAleatoria() 
+                });
             }
-            return parametrosJSON;
+            return parametrosJsonLoop;
         }
     }
 }
