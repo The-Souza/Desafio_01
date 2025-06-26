@@ -1,4 +1,4 @@
-﻿﻿using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace Desafio_01
 {
@@ -7,7 +7,7 @@ namespace Desafio_01
         public void GerarArquivoJson(string pastaDestino, int tamanhoArquivoDesejado)
         {
             GeradorStringAlfanumerico geradorStringAlfanumerico = new();
-            
+
             double limiteMaximoEmMB = 20000.00;
             double limiteComTolerancia = limiteMaximoEmMB + (limiteMaximoEmMB / 100);
             int loopEquivalente1MB = 13500;
