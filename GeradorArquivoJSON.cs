@@ -26,7 +26,7 @@ namespace Desafio_01
                         writer.WriteString("C", parametros.C);
                         writer.WriteString("D", parametros.D);
                         writer.WriteEndObject();
-                        quantidadeObjetos++;
+                        quantidadeObjetos += 4;
                     }
                     writer.WriteEndArray();
                 }
@@ -48,7 +48,7 @@ namespace Desafio_01
                         writer.WriteString("C", parametros.C);
                         writer.WriteString("D", parametros.D);
                         writer.WriteEndObject();
-                        quantidadeObjetos++;
+                        quantidadeObjetos += 4;
                     }
                     writer.WriteEndArray();
                 }
