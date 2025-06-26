@@ -4,7 +4,7 @@ namespace Desafio_01
 {
     public class GeradorArquivoJSON
     {
-        public void GerarArquivoJson(IEnumerable<ParametrosJSON> parametrosJSON, int tamanhoArquivoDesejado, string pastaDestino)
+        public void GerarArquivoJson(IEnumerable<ParametrosJSON> parametrosJSON, string pastaDestino, int tamanhoArquivoDesejado)
         {
             double limiteMaximoEmMB = 400.00;
             double limiteComTolerancia = limiteMaximoEmMB + (limiteMaximoEmMB / 100);
