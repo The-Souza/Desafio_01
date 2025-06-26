@@ -4,7 +4,7 @@
     {
         public void LimiteMaximoEmMB(string pasta, int tamanho)
         {
-            double limiteMaximoEmMB = 400.00;
+            double limiteMaximoEmMB = 20000.00;
             double limiteComTolerancia = limiteMaximoEmMB + (limiteMaximoEmMB / 100);
 
             if (File.Exists(pasta) && tamanho < limiteComTolerancia)

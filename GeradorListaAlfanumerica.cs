@@ -11,12 +11,12 @@
             int quantidadeLoop = tamanhoMB * loopEquivalente1MB;
             for (int i = 0; i < quantidadeLoop; i++)
             {
-                parametrosJsonLoop.Add(new ParametrosJSON 
-                { 
-                    A = geradorStringAlfanumerico.GetAlfanumericoAleatoria(), 
-                    B = geradorStringAlfanumerico.GetAlfanumericoAleatoria(), 
-                    C = geradorStringAlfanumerico.GetAlfanumericoAleatoria(), 
-                    D = geradorStringAlfanumerico.GetAlfanumericoAleatoria() 
+                parametrosJsonLoop.Add(new ParametrosJSON
+                {
+                    A = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
+                    B = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
+                    C = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
+                    D = geradorStringAlfanumerico.GetAlfanumericoAleatoria()
                 });
             }
             return parametrosJsonLoop;

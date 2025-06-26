@@ -12,10 +12,17 @@
                 Console.Clear();
             } while (string.IsNullOrEmpty(valorStringTamanhoArquivo));
 
-            Console.WriteLine($"Tamanho escolhido: {valorStringTamanhoArquivo}MB");
-
             int valorIntTamanhoArquivo = Convert.ToInt32(valorStringTamanhoArquivo);
 
+            if (valorIntTamanhoArquivo < 1000)
+            {
+                Console.WriteLine($"Tamanho escolhido: {valorStringTamanhoArquivo}MB");
+            }
+            else if (valorIntTamanhoArquivo >= 1000)
+            {
+                int valorIntGB = valorIntTamanhoArquivo / 1000;
+                Console.WriteLine($"Tamanho escolhido: {valorIntGB}GB");
+            }
             return valorIntTamanhoArquivo;
         }
     }
