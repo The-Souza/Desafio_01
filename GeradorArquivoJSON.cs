@@ -8,6 +8,7 @@ namespace Desafio_01
         {
             double limiteMaximoEmMB = 400.00;
             double limiteComTolerancia = limiteMaximoEmMB + (limiteMaximoEmMB / 100);
+            int quantidadeObjetos = 0;
 
             if (File.Exists(pastaDestino) && tamanhoArquivoDesejado < limiteComTolerancia)
             {
@@ -25,10 +26,12 @@ namespace Desafio_01
                         writer.WriteString("C", parametros.C);
                         writer.WriteString("D", parametros.D);
                         writer.WriteEndObject();
+                        quantidadeObjetos++;
                     }
                     writer.WriteEndArray();
                 }
                 Console.WriteLine("\nArquivo JSON atualizado.");
+                Console.WriteLine($"\nQuatidade de objetos criados: {quantidadeObjetos}");
             }
             else if (tamanhoArquivoDesejado < limiteComTolerancia)
             {
@@ -45,10 +48,12 @@ namespace Desafio_01
                         writer.WriteString("C", parametros.C);
                         writer.WriteString("D", parametros.D);
                         writer.WriteEndObject();
+                        quantidadeObjetos++;
                     }
                     writer.WriteEndArray();
                 }
                 Console.WriteLine("\nArquivo JSON criado.");
+                Console.WriteLine($"\nQuatidade de objetos criados: {quantidadeObjetos}");
             }
         }
     }
