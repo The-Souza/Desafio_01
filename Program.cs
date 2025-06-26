@@ -19,7 +19,7 @@
                 string caminhoCompleto = Path.Combine(pastaDiretorio, nomeArquivo);
 
                 List<ParametrosJSON> listaParametrosJSON = geradorListaAlfanumerica.GerarListaAlfanumerica(tamanhoArquivo);
-                geradorArquivoJSON.GerarArquivoJson(listaParametrosJSON, tamanhoArquivo, caminhoCompleto);
+                geradorArquivoJSON.GerarArquivoJson(listaParametrosJSON, caminhoCompleto, tamanhoArquivo);
                 verTamanhoArquivo.LimiteMaximoEmMB(caminhoCompleto, tamanhoArquivo);
             }
             catch (Exception ex)
