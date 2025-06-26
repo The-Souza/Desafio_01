@@ -1,4 +1,4 @@
-﻿namespace Desafio_01
+namespace Desafio_01
 {
     public class Program
     {
