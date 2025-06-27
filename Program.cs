@@ -25,7 +25,7 @@ namespace Desafio_01
                     tamanhoPadrao = GetTamanhoArquivo(definirTamanhoArquivo, tamanhoPadrao, argumento2);
 
                     VerTempoGasto verTempoGasto = new();
-                    VerTamanhoArquivo verTamanhoArquivo = new();
+                    GeradorArquivoJSON geradorArquivoJSON = new();
 
                     string nomeArquivo = "listaAlfanumericos.json";
                     string caminhoCompleto = Path.Combine(caminhoPadrao, nomeArquivo);
@@ -33,7 +33,6 @@ namespace Desafio_01
                     MostrarDiretorio(caminhoPadrao);
                     MostarTamanhoArquivo(tamanhoPadrao);
                     verTempoGasto.Conometro(caminhoCompleto, tamanhoPadrao);
-                    verTamanhoArquivo.LimiteMaximoEmMB(caminhoCompleto, tamanhoPadrao);
                 }
                 else
                 {
@@ -54,7 +53,7 @@ namespace Desafio_01
             }
             else
             {
-                Console.WriteLine($"Valor inválido: {definirDiretorio}. Usando valor padrão.");
+                Console.WriteLine($"\nValor inválido: {definirDiretorio}. Usando valor padrão.");
             }
             return caminhoPadrao;
         }
@@ -70,7 +69,7 @@ namespace Desafio_01
                 }
                 else
                 {
-                    Console.WriteLine($"Valor inválido: {valorStringTamanhoArquivo}. Usando valor padrão.");
+                    Console.WriteLine($"\nValor inválido: {valorStringTamanhoArquivo}. Usando valor padrão.");
                 }
             }
             return tamanhoPadrao;
