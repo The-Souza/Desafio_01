@@ -12,20 +12,17 @@ namespace Desafio_01
             double limiteComTolerancia = limiteMaximoEmMB + (limiteMaximoEmMB / 100);
             int loopEquivalente1MB = 13500;
             int quantidadeLoop = tamanhoArquivoDesejado * loopEquivalente1MB;
-            int quantidadeObjetos = 0;
 
             if (File.Exists(pastaDestino) && tamanhoArquivoDesejado < limiteComTolerancia)
             {
                 File.Delete(pastaDestino);
                 EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop);
                 Console.WriteLine("\nArquivo JSON atualizado.");
-                Console.WriteLine($"\nQuatidade de objetos criados: {quantidadeObjetos}");
             }
             else if (tamanhoArquivoDesejado < limiteComTolerancia)
             {
                 EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop);
                 Console.WriteLine("\nArquivo JSON criado.");
-                Console.WriteLine($"\nQuatidade de objetos criados: {quantidadeObjetos}");
             }
         }
 
@@ -35,10 +32,21 @@ namespace Desafio_01
             {
                 using StreamWriter writer = new(pastaDestino);
                 GerarLinha(geradorStringAlfanumerico);
+                int quantidadeObjetos = 0;
+
+                Console.WriteLine("\nIniciando operação...");
                 for (int i = 0; i < quantidadeLoop; i++)
                 {
                     writer.WriteLine(GerarLinha(geradorStringAlfanumerico) + (i < quantidadeLoop - 1 ? "," : ""));
+
+                    int porcetagem = (int)(((double)i / quantidadeLoop) * 100);
+                    string barraDeProgresso = "[" + new string('#', porcetagem / 2) + new string('-', 50 - porcetagem / 2) + "]";
+
+                    quantidadeObjetos += 4;
+
+                    Console.Write($"\r{barraDeProgresso} {porcetagem}% | Quatidade de objetos criados: {quantidadeObjetos}");
                 }
+                Console.WriteLine("\nOperação concluída!");
             }
             catch (Exception ex)
             {
