@@ -5,46 +5,18 @@ namespace Desafio_01
 {
     public class GeradorArquivoJSON
     {
-        private void EscreverArquivo(string pastaDestino, GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, double limiteComTolerancia)
+        private string GerarLinha(GeradorStringAlfanumerico geradorStringAlfanumerico)
         {
-            try
+            JsonSerializerOptions identacao = new() { WriteIndented = true };
+            var parametros = new ParametrosJSON
             {
-                using StreamWriter writer = new(pastaDestino);
-                GerarLinha(geradorStringAlfanumerico);
-                int quantidadeObjetos = 0;
-                long tamanhoBytes = 0;
-                double tamanhoArquivoDuranteLoop = 0;
-                string separador = "\n------------------------------------------------------------------------------------------------------------------------";
-
-                Console.WriteLine(separador);
-                Console.WriteLine("\nIniciando operação...\n");
-                for (int i = 0; i < quantidadeLoop; i++)
-                {
-                    if(tamanhoArquivoDuranteLoop <= limiteComTolerancia)
-                    {
-                        writer.WriteLine(GerarLinha(geradorStringAlfanumerico) + (i < quantidadeLoop - 1 ? "," : ""));
-                        BarraDeProgresso(quantidadeLoop, i, out int porcentagem, out string barraDeProgresso);
-                        tamanhoArquivoDuranteLoop = TamanhoArquivoDuranteLoop(geradorStringAlfanumerico, quantidadeLoop, ref tamanhoBytes, i);
-
-                        quantidadeObjetos += 4;
-
-                        Console.Write($"\r{barraDeProgresso} {porcentagem}% | Objetos criados: {quantidadeObjetos} | Tamanho arquivo JSON: {tamanhoArquivoDuranteLoop}MB");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"\n\nArquivo passou do limite de {limiteComTolerancia}MB, fechando arquivo.");
-                        break;
-                    }
-                }
-                Console.WriteLine("\n\nOperação concluída!");
-                Console.WriteLine(separador);
-
-                tamanhoBytes = VerTamanhoArquivoAposFechar(pastaDestino);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"\nException: {ex.Message}");
-            }
+                A = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
+                B = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
+                C = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
+                D = geradorStringAlfanumerico.GetAlfanumericoAleatoria()
+            };
+            var linha = JsonSerializer.Serialize(parametros, identacao);
+            return linha;
         }
 
         private void BarraDeProgresso(int quantidadeLoop, int i, out int porcentagem, out string barraDeProgresso)
@@ -79,18 +51,49 @@ namespace Desafio_01
             return tamanhoBytes;
         }
 
-        private string GerarLinha(GeradorStringAlfanumerico geradorStringAlfanumerico)
+        private void EscreverArquivo(string pastaDestino, GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, double limiteComTolerancia)
         {
-            JsonSerializerOptions identacao = new() { WriteIndented = true };
-            var parametros = new ParametrosJSON
+            try
             {
-                A = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
-                B = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
-                C = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
-                D = geradorStringAlfanumerico.GetAlfanumericoAleatoria()
-            };
-            var linha = JsonSerializer.Serialize(parametros, identacao);
-            return linha;
+                using StreamWriter writer = new(pastaDestino);
+                GerarLinha(geradorStringAlfanumerico);
+                int quantidadeObjetos = 0;
+                long tamanhoBytes = 0;
+                double tamanhoArquivoDuranteLoop = 0;
+                string separador = "\n------------------------------------------------------------------------------------------------------------------------";
+
+                Console.WriteLine(separador);
+                Console.WriteLine("\nIniciando operação...\n");
+
+                for (int i = 0; i < quantidadeLoop; i++)
+                {
+                    if(tamanhoArquivoDuranteLoop <= limiteComTolerancia)
+                    {
+                        writer.WriteLine(GerarLinha(geradorStringAlfanumerico) + (i < quantidadeLoop - 1 ? "," : ""));
+                        BarraDeProgresso(quantidadeLoop, i, out int porcentagem, out string barraDeProgresso);
+                        tamanhoArquivoDuranteLoop = TamanhoArquivoDuranteLoop(geradorStringAlfanumerico, quantidadeLoop, ref tamanhoBytes, i);
+
+                        quantidadeObjetos += 4;
+
+                        Console.Write($"\r{barraDeProgresso} {porcentagem}% | Objetos criados: {quantidadeObjetos} | Tamanho arquivo JSON: {tamanhoArquivoDuranteLoop}MB");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\n\nArquivo passou do limite de {limiteComTolerancia}MB, fechando arquivo.");
+                        break;
+                    }
+                }
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("\n\nOperação concluída!");
+                Console.ResetColor();
+                Console.WriteLine(separador);
+
+                tamanhoBytes = VerTamanhoArquivoAposFechar(pastaDestino);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"\nException: {ex.Message}");
+            }
         }
 
         public void GerarArquivoJson(string pastaDestino, int tamanhoArquivoDesejado)
