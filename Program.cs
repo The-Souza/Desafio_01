@@ -69,6 +69,7 @@ namespace Desafio_01
             {
                 ArgumentNullException.ThrowIfNull(args);
                 Program program = new();
+
                 string[] argumentos = Environment.GetCommandLineArgs();
                 string definirDiretorio = "--output";
                 string definirTamanhoArquivo = "--size";

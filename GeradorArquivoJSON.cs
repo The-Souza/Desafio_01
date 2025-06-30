@@ -5,7 +5,7 @@ namespace Desafio_01
 {
     public class GeradorArquivoJSON
     {
-        private void EscreverArquivo(string pastaDestino, GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop)
+        private void EscreverArquivo(string pastaDestino, GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, double limiteComTolerancia)
         {
             try
             {
@@ -13,19 +13,32 @@ namespace Desafio_01
                 GerarLinha(geradorStringAlfanumerico);
                 int quantidadeObjetos = 0;
                 long tamanhoBytes = 0;
+                double tamanhoArquivoDuranteLoop = 0;
+                string separador = "\n------------------------------------------------------------------------------------------------------------------------";
 
-                Console.WriteLine("\nIniciando operação...");
+                Console.WriteLine(separador);
+                Console.WriteLine("\nIniciando operação...\n");
                 for (int i = 0; i < quantidadeLoop; i++)
                 {
-                    writer.WriteLine(GerarLinha(geradorStringAlfanumerico) + (i < quantidadeLoop - 1 ? "," : ""));
-                    BarraDeProgresso(quantidadeLoop, i, out int porcentagem, out string barraDeProgresso);
-                    double jsonEmMbFormatado = TamanhoArquivoDuranteLoop(geradorStringAlfanumerico, quantidadeLoop, ref tamanhoBytes, i);
+                    if(tamanhoArquivoDuranteLoop <= limiteComTolerancia)
+                    {
+                        writer.WriteLine(GerarLinha(geradorStringAlfanumerico) + (i < quantidadeLoop - 1 ? "," : ""));
+                        BarraDeProgresso(quantidadeLoop, i, out int porcentagem, out string barraDeProgresso);
+                        tamanhoArquivoDuranteLoop = TamanhoArquivoDuranteLoop(geradorStringAlfanumerico, quantidadeLoop, ref tamanhoBytes, i);
 
-                    quantidadeObjetos += 4;
+                        quantidadeObjetos += 4;
 
-                    Console.Write($"\r{barraDeProgresso} {porcentagem}% | Objetos criados: {quantidadeObjetos} | Tamanho arquivo JSON: {jsonEmMbFormatado}MB");
+                        Console.Write($"\r{barraDeProgresso} {porcentagem}% | Objetos criados: {quantidadeObjetos} | Tamanho arquivo JSON: {tamanhoArquivoDuranteLoop}MB");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\n\nArquivo passou do limite de {limiteComTolerancia}MB, fechando arquivo.");
+                        break;
+                    }
                 }
-                Console.WriteLine("\nOperação concluída!");
+                Console.WriteLine("\n\nOperação concluída!");
+                Console.WriteLine(separador);
+
                 tamanhoBytes = VerTamanhoArquivoAposFechar(pastaDestino);
             }
             catch (Exception ex)
@@ -39,12 +52,12 @@ namespace Desafio_01
             porcentagem = (int)(((double)i / quantidadeLoop) * 100);
             barraDeProgresso = "[" + new string('#', porcentagem / 2) + new string('-', 50 - porcentagem / 2) + "]";
         }
+
         private double TamanhoArquivoDuranteLoop(GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, ref long tamanhoBytes, int i)
         {
             tamanhoBytes += Encoding.UTF8.GetByteCount(GerarLinha(geradorStringAlfanumerico) + (i < quantidadeLoop - 1 ? "," : ""));
             double jsonEmMB = (double)tamanhoBytes / (1024 * 1024);
             double jsonEmMbFormatado = Math.Round(jsonEmMB, 2);
-
             return jsonEmMbFormatado;
         }
 
@@ -76,7 +89,6 @@ namespace Desafio_01
                 C = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
                 D = geradorStringAlfanumerico.GetAlfanumericoAleatoria()
             };
-
             var linha = JsonSerializer.Serialize(parametros, identacao);
             return linha;
         }
@@ -93,17 +105,17 @@ namespace Desafio_01
             if (File.Exists(pastaDestino) && tamanhoArquivoDesejado < limiteComTolerancia)
             {
                 File.Delete(pastaDestino);
-                EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop);
+                EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
                 Console.WriteLine("\nArquivo JSON atualizado.");
             }
             else if (tamanhoArquivoDesejado < limiteComTolerancia)
             {
-                EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop);
+                EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
                 Console.WriteLine("\nArquivo JSON criado.");
             }
             else
             {
-                Console.WriteLine("\nArquivo não gerado, passou do limite.");
+                Console.WriteLine($"\nArquivo não gerado, passou do limite de {limiteComTolerancia}MB.");
             }
         }
     }
