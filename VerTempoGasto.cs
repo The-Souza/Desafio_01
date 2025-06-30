@@ -4,20 +4,24 @@ namespace Desafio_01
 {
     public class VerTempoGasto
     {
-        public void Conometro(string pastaRaiz, int tamanhoArquivoMB)
+        public void Conometro(string pastaRaiz, int valorTamanhoArquivo)
         {
             GeradorArquivoJSON geradorArquivoJSON = new();
             Stopwatch stopwatch = new();
 
             stopwatch.Start();
 
-            geradorArquivoJSON.GerarArquivoJson(pastaRaiz, tamanhoArquivoMB);
+            geradorArquivoJSON.GerarArquivoJson(pastaRaiz, valorTamanhoArquivo);
 
             stopwatch.Stop();
 
             TimeSpan tempoGasto = stopwatch.Elapsed;
             string tempoFormatado = tempoGasto.ToString("hh\\:mm\\:ss\\.fff");
-            Console.WriteLine($"\nTempo gasto: {tempoFormatado}");
+
+            if (stopwatch.ElapsedMilliseconds > 0)
+            {
+                Console.WriteLine($"\nTempo gasto: {tempoFormatado}");
+            }
         }
     }
 }

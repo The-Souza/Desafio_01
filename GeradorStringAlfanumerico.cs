@@ -4,7 +4,7 @@ namespace Desafio_01
 {
     public class GeradorStringAlfanumerico
     {
-        public string GerarStringAlfanumerico()
+        private string GerarStringAlfanumerico()
         {
             int comprimento = 6;
             string caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
