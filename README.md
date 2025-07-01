@@ -97,10 +97,10 @@
 </h2>
 
 <p align="center">
-    <img src="img/img1.jpg" alt="imagem1">
-    <img src="img/img2.jpg" alt="imagem2">
-    <img src="img/img3.jpg" alt="imagem3">
-    <img src="img/img4.jpg" alt="imagem4">
+    <img src="img/img1.png" width="300" height="200" alt="imagem1">
+    <img src="img/img2.png" width="300" height="200" alt="imagem2">
+    <img src="img/img3.png" width="300" height="200" alt="imagem3">
+    <img src="img/img4.png" width="300" height="200" alt="imagem4">
 </p>
 
 <h2>
