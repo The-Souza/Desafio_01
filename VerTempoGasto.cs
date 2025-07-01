@@ -18,7 +18,7 @@ namespace Desafio_01
             TimeSpan tempoGasto = stopwatch.Elapsed;
             string tempoFormatado = tempoGasto.ToString("hh\\:mm\\:ss\\.fff");
 
-            if (stopwatch.ElapsedMilliseconds > 0)
+            if (stopwatch.ElapsedMilliseconds > 1000)
             {
                 Console.WriteLine($"\nTempo gasto: {tempoFormatado}");
             }
