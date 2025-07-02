@@ -11,7 +11,7 @@ namespace Desafio_01
             }
             else
             {
-                Console.WriteLine($"\nValor inválido: {definirDiretorio}. Usando valor padrão.");
+                Console.WriteLine($"\nValor inválido.");
             }
             return caminhoPadrao;
         }
@@ -23,11 +23,11 @@ namespace Desafio_01
                 string valorStringDefinirTamanhoArquivo = argumento2.Substring(definirTamanhoArquivo.Length + 1);
                 if (double.TryParse(valorStringDefinirTamanhoArquivo, out double resultado))
                 {
-                    tamanhoPadrao = (tamanhoPadrao - tamanhoPadrao) + resultado;
+                    tamanhoPadrao = resultado;
                 }
                 else
                 {
-                    Console.WriteLine($"\nValor inválido: {definirTamanhoArquivo}. Usando valor padrão.");
+                    Console.WriteLine($"\nValor inválido.");
                 }
             }
             return tamanhoPadrao;
@@ -73,8 +73,8 @@ namespace Desafio_01
                 string[] argumentos = Environment.GetCommandLineArgs();
                 string definirDiretorio = "--output";
                 string definirTamanhoArquivo = "--size";
-                string caminhoPadrao = @"C:\Users\guilherme2000925\Desktop\PastaDestino";
-                double tamanhoPadrao = 100.00;
+                string caminhoPadrao = "";
+                double tamanhoPadrao = 0;
 
                 if (argumentos.Length >= 2)
                 {

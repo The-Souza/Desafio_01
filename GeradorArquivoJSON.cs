@@ -65,6 +65,7 @@ namespace Desafio_01
                 Console.WriteLine(separador);
                 Console.WriteLine("\nIniciando operação...\n");
 
+                writer.WriteLine("[");
                 for (int i = 0; i < quantidadeLoop; i++)
                 {
                     if(tamanhoArquivoDuranteLoop <= limiteComTolerancia)
@@ -83,6 +84,8 @@ namespace Desafio_01
                         break;
                     }
                 }
+                writer.WriteLine("]");
+
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("\n\nOperação concluída!");
                 Console.ResetColor();
@@ -106,6 +109,11 @@ namespace Desafio_01
             int quantidadeLoop = tamanhoArquivoDesejado * loopEquivalente1MB;
 
             if (File.Exists(pastaDestino) && tamanhoArquivoDesejado < limiteComTolerancia)
+            {
+                EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
+                Console.WriteLine("\nArquivo JSON atualizado.");
+            }
+            else if (!File.Exists(pastaDestino) && tamanhoArquivoDesejado < limiteComTolerancia)
             {
                 EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
                 Console.WriteLine("\nArquivo JSON criado.");
