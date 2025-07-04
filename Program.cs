@@ -64,7 +64,6 @@ namespace Desafio_01
         {
             // cd C:\Users\guilherme2000925\source\repos\Desafio_01\bin\Debug\net8.0
             // Desafio_01.exe --output=C:\Users\guilherme2000925\Desktop\PastaDestino --size=400
-
             try
             {
                 ArgumentNullException.ThrowIfNull(args);
