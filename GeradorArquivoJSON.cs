@@ -15,7 +15,8 @@ namespace Desafio_01
                 C = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
                 D = geradorStringAlfanumerico.GetAlfanumericoAleatoria()
             };
-            return JsonSerializer.Serialize(parametros, identacao);
+            var linha = JsonSerializer.Serialize(parametros, identacao);
+            return linha;
         }
 
         private void BarraDeProgresso(int quantidadeLoop, int i, out int porcentagem, out string barraDeProgresso)
@@ -24,9 +25,9 @@ namespace Desafio_01
             barraDeProgresso = "[" + new string('#', porcentagem / 2) + new string('-', 50 - porcentagem / 2) + "]";
         }
 
-        private double TamanhoArquivoDuranteLoop(string linha, int quantidadeLoop, ref long tamanhoBytes, int i)
+        private double TamanhoArquivoDuranteLoop(GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, ref long tamanhoBytes, int i)
         {
-            tamanhoBytes += Encoding.UTF8.GetByteCount(linha + (i < quantidadeLoop - 1 ? "," : ""));
+            tamanhoBytes += Encoding.UTF8.GetByteCount(GerarLinha(geradorStringAlfanumerico) + (i < quantidadeLoop - 1 ? "," : ""));
             return Math.Round((double)tamanhoBytes / (1024 * 1024), 2);
         }
 
@@ -36,69 +37,67 @@ namespace Desafio_01
             double jsonEmMb = Math.Round((double)tamanhoBytes / (1024 * 1024), 2);
 
             if (jsonEmMb < 1000.00)
+            {
                 Console.WriteLine($"\nTamanho do arquivo (Após fechar): {jsonEmMb}MB");
+            }
             else
+            {
                 Console.WriteLine($"\nTamanho do arquivo (Após fechar): {Math.Round(jsonEmMb / 1000, 2)}GB");
-
+            }
             return tamanhoBytes;
         }
 
-        private void EscreverArquivo(string pastaDestino, GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, double limiteComTolerancia)
+        private void EscreverArquivoEmParalelo(string pastaDestino, GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, double limiteComTolerancia)
         {
             try
             {
                 int numThreads = Environment.ProcessorCount;
                 int tamanhoParte = quantidadeLoop / numThreads;
-                List<List<string>> blocos = new();
-
-                Parallel.For(0, numThreads, i =>
-                {
-                    List<string> bloco = new();
-                    for (int j = 0; j < tamanhoParte; j++)
-                    {
-                        int indexGlobal = i * tamanhoParte + j;
-                        bloco.Add(GerarLinha(geradorStringAlfanumerico));
-                    }
-                    lock (blocos)
-                    {
-                        blocos.Add(bloco);
-                    }
-                });
-
-                List<string> todasLinhas = [.. blocos.SelectMany(b => b)];
-                if (todasLinhas.Count < quantidadeLoop)
-                {
-                    for (int i = todasLinhas.Count; i < quantidadeLoop; i++)
-                        todasLinhas.Add(GerarLinha(geradorStringAlfanumerico));
-                }
+                Thread[] threads = new Thread[numThreads];
 
                 using StreamWriter writer = new(pastaDestino);
                 long tamanhoBytes = 0;
                 int quantidadeObjetos = 0;
+                double tamanhoArquivoDuranteLoop = 0;
                 string separador = "\n------------------------------------------------------------------------------------------------------------------------";
 
                 Console.WriteLine(separador);
                 Console.WriteLine("\nIniciando operação...\n");
 
                 writer.WriteLine("[");
-                for (int i = 0; i < todasLinhas.Count; i++)
+                for (int i = 0; i < numThreads; i++)
                 {
-                    string linha = todasLinhas[i];
-                    double tamanhoAtual = TamanhoArquivoDuranteLoop(linha, quantidadeLoop, ref tamanhoBytes, i);
+                    int startIndex = i * (tamanhoParte / numThreads);
+                    int endIndex = (i + 1) * (tamanhoParte / numThreads);
+                    if (i == numThreads - 1)
+                    {
+                        endIndex = tamanhoParte;
+                    }
 
-                    if (tamanhoAtual <= limiteComTolerancia)
+                    int threadIndex = i;
+                    threads[i] = new Thread(() =>
                     {
-                        writer.WriteLine(linha + (i < todasLinhas.Count - 1 ? "," : ""));
-                        BarraDeProgresso(quantidadeLoop, i, out int porcentagem, out string barraDeProgresso);
-                        quantidadeObjetos += 4;
-                        Console.Write($"\r{barraDeProgresso} {porcentagem}% | Objetos criados: {quantidadeObjetos} | Tamanho arquivo JSON: {tamanhoAtual}MB");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"\n\nArquivo passou do limite de {limiteComTolerancia}MB, fechando arquivo.");
-                        break;
-                    }
+                        for (int j = startIndex; j < endIndex; j++)
+                        {
+                            EscreverArquivo(geradorStringAlfanumerico, tamanhoParte, limiteComTolerancia, tamanhoArquivoDuranteLoop, writer);
+                            BarraDeProgresso(tamanhoParte, i, out int porcentagem, out string barraDeProgresso);
+                            tamanhoArquivoDuranteLoop = TamanhoArquivoDuranteLoop(geradorStringAlfanumerico, tamanhoParte, ref tamanhoBytes, i);
+
+                            quantidadeObjetos += 4;
+
+                            Console.Write($"\r{barraDeProgresso} {porcentagem}% | Objetos criados: {quantidadeObjetos} | Tamanho arquivo JSON: {tamanhoArquivoDuranteLoop}MB");
+                        }
+                    });
+                    threads[i].Start();
                 }
+
+                foreach (Thread thread in threads)
+                {
+                    thread.Join();
+                }
+
+                Console.WriteLine("Loop completo.");
+
                 writer.WriteLine("]");
 
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -114,6 +113,22 @@ namespace Desafio_01
             }
         }
 
+        private void EscreverArquivo(GeradorStringAlfanumerico geradorStringAlfanumerico, int tamanhoParte, double limiteComTolerancia, double tamanhoArquivoDuranteLoop, StreamWriter writer)
+        {
+            for (int i = 0; i < tamanhoParte; i++)
+            {
+                if (tamanhoArquivoDuranteLoop <= limiteComTolerancia)
+                {
+                    writer.WriteLine(GerarLinha(geradorStringAlfanumerico) + (i < tamanhoParte - 1 ? "," : ""));
+                }
+                else
+                {
+                    Console.WriteLine($"\n\nArquivo passou do limite de {limiteComTolerancia}MB, fechando arquivo.");
+                    break;
+                }
+            }
+        }
+
         public void GerarArquivoJson(string pastaDestino, int tamanhoArquivoDesejado)
         {
             GeradorStringAlfanumerico geradorStringAlfanumerico = new();
@@ -124,7 +139,7 @@ namespace Desafio_01
 
             if (tamanhoArquivoDesejado < limiteComTolerancia)
             {
-                EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
+                EscreverArquivoEmParalelo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
                 Console.WriteLine(File.Exists(pastaDestino) ? "\nArquivo JSON atualizado." : "\nArquivo JSON criado.");
             }
             else
