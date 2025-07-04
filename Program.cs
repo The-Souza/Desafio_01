@@ -60,7 +60,7 @@ namespace Desafio_01
             }
         }
 
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             // cd C:\Users\guilherme2000925\source\repos\Desafio_01\bin\Debug\net8.0
             // Desafio_01.exe --output=C:\Users\guilherme2000925\Desktop\PastaDestino --size=400
@@ -93,7 +93,7 @@ namespace Desafio_01
                     program.MostarTamanhoArquivo(tamanhoPadrao);
 
                     int valorIntTamanhoPadrao = Convert.ToInt32(tamanhoPadrao);
-                    await verTempoGasto.Conometro(caminhoCompleto, valorIntTamanhoPadrao);
+                    verTempoGasto.Conometro(caminhoCompleto, valorIntTamanhoPadrao);
                 }
                 else
                 {
