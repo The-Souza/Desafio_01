@@ -36,10 +36,13 @@ namespace Desafio_01
             double jsonEmMb = Math.Round((double)tamanhoBytes / (1024 * 1024), 2);
 
             if (jsonEmMb < 1000.00)
+            {
                 Console.WriteLine($"\nTamanho do arquivo (Após fechar): {jsonEmMb}MB");
+            }
             else
+            {
                 Console.WriteLine($"\nTamanho do arquivo (Após fechar): {Math.Round(jsonEmMb / 1000, 2)}GB");
-
+            }
             return tamanhoBytes;
         }
 
