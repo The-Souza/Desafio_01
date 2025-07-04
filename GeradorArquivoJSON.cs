@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 
@@ -21,9 +22,9 @@ namespace Desafio_01
             return parametrosJSONs;
         }
 
-        private void BarraDeProgresso(int itensIterados, out int porcentagem, out string barraDeProgresso)
+        private void BarraDeProgresso(int iteracoes, out int porcentagem, out string barraDeProgresso)
         {
-            porcentagem = (int)(((double)itensIterados) * 100);
+            porcentagem = (int)(((double)iteracoes) * 100);
             barraDeProgresso = "[" + new string('#', porcentagem / 2) + new string('-', 50 - porcentagem / 2) + "]";
         }
 
@@ -57,25 +58,17 @@ namespace Desafio_01
                 arquivosTemporarios.Add(pastaDestinoTemporario);
 
                 File.WriteAllText(pastaDestinoTemporario, jsonString);
-                //Console.WriteLine($"\nThread {indiceParte}: Arquivo {pastaDestinoTemporario} escrito.");
             };
         }
 
         private List<ParametrosJSON> CombinarArquivosTemporarios(List<string> arquivosTemporarios)
         {
             List<ParametrosJSON> dadosCombinados = [];
-            //int totalItems = arquivosTemporarios.Count;
-            //int itensIterados = 0;
             foreach (string arquivo in arquivosTemporarios)
             {
                 string jsonString = File.ReadAllText(arquivo);
                 List<ParametrosJSON>? parteDadosCombinados = JsonSerializer.Deserialize<List<ParametrosJSON>>(jsonString);
                 dadosCombinados.AddRange(parteDadosCombinados);
-                //itensIterados++;
-                
-                //BarraDeProgresso(itensIterados, out int porcentagem, out string barraDeProgresso);
-                //Console.Write($"\r{barraDeProgresso} {porcentagem}%");
-
                 File.Delete(arquivo);
             }
             return dadosCombinados;
@@ -96,9 +89,19 @@ namespace Desafio_01
 
                 List<string> arquivosTemporarios = [];
                 JsonSerializerOptions options = new() { WriteIndented = true };
+                int iteracoes = 0;
+                object lockObject = new();
 
                 Action<int> escreverParte = GerarArquivosTemporarios(parametrosJSONs, numThreads, tamanhoParte, arquivosTemporarios, options);
-                Parallel.For(0, numThreads, escreverParte);
+                Parallel.For(0, numThreads, escreverParte => 
+                {
+                    lock (lockObject)
+                    {
+                        iteracoes++;
+                        BarraDeProgresso(iteracoes, out int porcentagem, out string barraDeProgresso);
+                        Console.Write($"\r{barraDeProgresso} {porcentagem}%");
+                    }
+                });
 
                 List<ParametrosJSON> dadosCombinados = CombinarArquivosTemporarios(arquivosTemporarios);
 
