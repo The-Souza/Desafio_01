@@ -111,12 +111,7 @@ namespace Desafio_01
             if (File.Exists(pastaDestino) && tamanhoArquivoDesejado < limiteComTolerancia)
             {
                 EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
-                Console.WriteLine("\nArquivo JSON atualizado.");
-            }
-            else if (!File.Exists(pastaDestino) && tamanhoArquivoDesejado < limiteComTolerancia)
-            {
-                EscreverArquivo(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
-                Console.WriteLine("\nArquivo JSON criado.");
+                Console.WriteLine(File.Exists(pastaDestino) ? "\nArquivo JSON atualizado." : "\nArquivo JSON criado.");
             }
             else
             {
