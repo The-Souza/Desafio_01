@@ -177,9 +177,9 @@ namespace Desafio_01
             };
         }
 
-        private void EscreverEmPartes(List<ParametrosJSON> parametrosJSONs, int numThreads, int tamanhoParte, JsonSerializerOptions options, List<string> arquivosTemporarios)
+        private void EscreverEmParalelo(List<ParametrosJSON> parametrosJSONs, int numThreads, int tamanhoParte, JsonSerializerOptions options, List<string> arquivosTemporarios)
         {
-            int iteracoesEscreverEmPartes = 0;
+            int iteracoesEscreverEmParalelo = 0;
             object lockObject = new();
 
             Action<int> escreverParte = GerarArquivosTemporarios(parametrosJSONs, numThreads, tamanhoParte, arquivosTemporarios, options, lockObject);
@@ -188,8 +188,8 @@ namespace Desafio_01
                 escreverParte(i);
                 lock (lockObject)
                 {
-                    iteracoesEscreverEmPartes++;
-                    BarraDeProgresso(iteracoesEscreverEmPartes, numThreads, out int porcentagem, out string barraDeProgresso);
+                    iteracoesEscreverEmParalelo++;
+                    BarraDeProgresso(iteracoesEscreverEmParalelo, numThreads, out int porcentagem, out string barraDeProgresso);
                     Console.Write($"\rGerando arquivos temporários | {barraDeProgresso} {porcentagem}%");
                 }
             });
@@ -211,7 +211,8 @@ namespace Desafio_01
                 JsonSerializerOptions options = new() { WriteIndented = true };
 
                 List<string> arquivosTemporarios = [];
-                EscreverEmPartes(parametrosJSONs, numThreads, tamanhoParte, options, arquivosTemporarios);
+
+                EscreverEmParalelo(parametrosJSONs, numThreads, tamanhoParte, options, arquivosTemporarios);
                 ValidarTamanhoArquivoParaCombinar(pastaDestino, options, arquivosTemporarios, limiteComTolerancia);
 
                 Console.ForegroundColor = ConsoleColor.Green;
