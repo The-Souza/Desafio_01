@@ -48,24 +48,87 @@ namespace Desafio_01
             return tamanhoBytes;
         }
 
-        private Action<int> GerarArquivosTemporarios(List<ParametrosJSON> parametrosJSONs, int numThreads, int tamanhoParte, List<string> arquivosTemporarios, JsonSerializerOptions options, object lockObject)
+        private void ApagarArquivosTemporarios(string caminhoPastaArquivosTemporarios)
         {
-            return (indiceParte) =>
+            try
             {
-                int inicio = indiceParte * tamanhoParte;
-                int fim = (indiceParte == numThreads - 1) ? parametrosJSONs.Count : (indiceParte + 1) * tamanhoParte;
-                List<ParametrosJSON> dadosTemporarios = parametrosJSONs.GetRange(inicio, fim - inicio);
-
-                string pastaDestinoTemporario = $"dadosTemporários_{indiceParte}.json";
-                string jsonString = JsonSerializer.Serialize(dadosTemporarios, options);
-
-                lock (lockObject)
+                if (Directory.Exists(caminhoPastaArquivosTemporarios))
                 {
-                    arquivosTemporarios.Add(pastaDestinoTemporario);
+                    string[] arquivos = Directory.GetFiles(caminhoPastaArquivosTemporarios);
+                    foreach (string arquivo in arquivos)
+                    {
+                        try
+                        {
+                            if (File.Exists(arquivo))
+                            {
+                                File.Delete(arquivo);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Erro ao excluir {arquivo}: {ex.Message}");
+                        }
+                    }
                 }
+                else
+                {
+                    Console.WriteLine($"\nA pasta '{caminhoPastaArquivosTemporarios}' não existe.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"\nOcorreu um erro ao excluir os arquivos: {ex.Message}");
+            }
+        }
 
-                File.WriteAllText(pastaDestinoTemporario, jsonString);
-            };
+        private void ValidarTamanhoArquivoParaCombinar(string pastaDestino, JsonSerializerOptions options, List<string> arquivosTemporarios, double limiteComTolerancia)
+        {
+            string caminhoPastaArquivosTemporarios = @"C:\Users\guilherme2000925\Desktop\PastaDestino\ArquivosTemporarios";
+            string extensaoPermitida = ".json" ;
+
+            long tamanhoTotal = CalcularTamanhoArquivoPasta(caminhoPastaArquivosTemporarios, extensaoPermitida);
+            double tamanhoTotalFormatado = Math.Round((double)tamanhoTotal / (1024 * 1024), 2);
+
+            try
+            {
+                if (tamanhoTotalFormatado <= limiteComTolerancia)
+                {
+                    List<ParametrosJSON> dadosCombinados = CombinarArquivosTemporarios(arquivosTemporarios);
+
+                    string jsonStringFinal = JsonSerializer.Serialize(dadosCombinados, options);
+                    File.WriteAllText(pastaDestino, jsonStringFinal);
+
+                    VerTamanhoArquivoAposFechar(pastaDestino);
+                }
+                else
+                {
+                    ApagarArquivosTemporarios(caminhoPastaArquivosTemporarios);
+                    Console.WriteLine($"Tamanho excede o limite. Arquivo não gerado.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao salvar o arquivo combinado: {ex.Message}");
+            }
+        }
+
+        private long CalcularTamanhoArquivoPasta(string caminhoPasta, string extensaoPermitida = null!)
+        {
+            long tamanhoTotal = 0;
+            DirectoryInfo diretorio = new(caminhoPasta);
+
+            if (!diretorio.Exists)
+            {
+                Console.WriteLine("O caminho especificado não existe.");
+                return 0;
+            }
+
+            FileInfo[] arquivos = extensaoPermitida == null ? diretorio.GetFiles() : diretorio.GetFiles().Where(f => extensaoPermitida.Contains(f.Extension.ToLower())).ToArray();
+            foreach (FileInfo arquivo in arquivos)
+            {
+                tamanhoTotal += arquivo.Length;
+            }
+            return tamanhoTotal;
         }
 
         private List<ParametrosJSON> CombinarArquivosTemporarios(List<string> arquivosTemporarios)
@@ -75,17 +138,43 @@ namespace Desafio_01
             List<ParametrosJSON> dadosCombinados = [];
             foreach (string arquivo in arquivosTemporarios)
             {
-                string jsonString = File.ReadAllText(arquivo);
-                List<ParametrosJSON>? parteDadosCombinados = JsonSerializer.Deserialize<List<ParametrosJSON>>(jsonString);
-                dadosCombinados.AddRange(parteDadosCombinados);
-                File.Delete(arquivo);
+                try
+                {
+                    string jsonString = File.ReadAllText(arquivo);
+                    List<ParametrosJSON>? parteDadosCombinados = JsonSerializer.Deserialize<List<ParametrosJSON>>(jsonString)!;
+                    dadosCombinados.AddRange(parteDadosCombinados);
+                    File.Delete(arquivo);
 
-                iteracoesCombinarArquivos++;
+                    iteracoesCombinarArquivos++;
 
-                BarraDeProgresso(iteracoesCombinarArquivos, arquivosTemporarios.Count, out int porcentagem, out string barraDeProgresso);
-                Console.Write($"\rCombinando arquivos temporários | {barraDeProgresso} {porcentagem}%");
+                    BarraDeProgresso(iteracoesCombinarArquivos, arquivosTemporarios.Count, out int porcentagem, out string barraDeProgresso);
+                    Console.Write($"\rCombinando arquivos temporários | {barraDeProgresso} {porcentagem}%");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"\nErro ao combinar arquivos: {ex.Message}");
+                }
             }
             return dadosCombinados;
+        }
+
+        private Action<int> GerarArquivosTemporarios(List<ParametrosJSON> parametrosJSONs, int numThreads, int tamanhoParte, List<string> arquivosTemporarios, JsonSerializerOptions options, object lockObject)
+        {
+            return (indiceParte) =>
+            {
+                int inicio = indiceParte * tamanhoParte;
+                int fim = (indiceParte == numThreads - 1) ? parametrosJSONs.Count : (indiceParte + 1) * tamanhoParte;
+                List<ParametrosJSON> dadosTemporarios = parametrosJSONs.GetRange(inicio, fim - inicio);
+
+                string pastaDestinoTemporario = @$"C:\Users\guilherme2000925\Desktop\PastaDestino\ArquivosTemporarios\dadosTemporários_{indiceParte}.json";
+                string jsonString = JsonSerializer.Serialize(dadosTemporarios, options);
+
+                lock (lockObject)
+                {
+                    arquivosTemporarios.Add(pastaDestinoTemporario);
+                }
+                File.WriteAllText(pastaDestinoTemporario, jsonString);
+            };
         }
 
         private void EscreverEmPartes(List<ParametrosJSON> parametrosJSONs, int numThreads, int tamanhoParte, JsonSerializerOptions options, List<string> arquivosTemporarios)
@@ -123,22 +212,16 @@ namespace Desafio_01
 
                 List<string> arquivosTemporarios = [];
                 EscreverEmPartes(parametrosJSONs, numThreads, tamanhoParte, options, arquivosTemporarios);
-
-                List<ParametrosJSON> dadosCombinados = CombinarArquivosTemporarios(arquivosTemporarios);
-
-                string jsonStringFinal = JsonSerializer.Serialize(dadosCombinados, options);
-                File.WriteAllText(pastaDestino, jsonStringFinal);
+                ValidarTamanhoArquivoParaCombinar(pastaDestino, options, arquivosTemporarios, limiteComTolerancia);
 
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("\n\nOperação concluída!");
+                Console.WriteLine("\nOperação concluída!");
                 Console.ResetColor();
                 Console.WriteLine(separador);
-
-                VerTamanhoArquivoAposFechar(pastaDestino);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\nException: {ex.Message}");
+                Console.WriteLine($"\nErro ao escrever arquivo JSON: {ex.Message}");
             }
         }
 
@@ -153,7 +236,7 @@ namespace Desafio_01
             if (tamanhoArquivoDesejado <= limiteComTolerancia)
             {
                 EscreverArquivoComThreads(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
-                Console.WriteLine(File.Exists(pastaDestino) ? "\nArquivo JSON atualizado." : "\nArquivo JSON criado.");
+                Console.WriteLine("\nArquivo JSON criado.");
             }
             else
             {
