@@ -4,9 +4,13 @@ namespace Desafio_01
 {
     public class GeradorArquivoJSON
     {
-        private static List<ParametrosJSON> GerarListaAlfanumerica(GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop)
+        private List<ParametrosJSON> GerarListaAlfanumerica(GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop)
         {
             List<ParametrosJSON> parametrosJSONs = [];
+
+            Console.Write($"Gerando lista...\n");
+
+            int quantidadeObjetos = quantidadeLoop * 4;
             for (int i = 0; i < quantidadeLoop; i++)
             {
                 parametrosJSONs.Add(new ParametrosJSON
@@ -16,7 +20,9 @@ namespace Desafio_01
                     C = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
                     D = geradorStringAlfanumerico.GetAlfanumericoAleatoria()
                 });
+                BarraDeProgresso(i, quantidadeLoop, out int porcentagem, out string barraDeProgresso);
             }
+            Console.Write($"Objetos criados: {quantidadeObjetos}\n");
             return parametrosJSONs;
         }
 
@@ -64,6 +70,8 @@ namespace Desafio_01
 
         private List<ParametrosJSON> CombinarArquivosTemporarios(List<string> arquivosTemporarios)
         {
+            int iteracoesCombinarArquivos = 0;
+
             List<ParametrosJSON> dadosCombinados = [];
             foreach (string arquivo in arquivosTemporarios)
             {
@@ -71,11 +79,35 @@ namespace Desafio_01
                 List<ParametrosJSON>? parteDadosCombinados = JsonSerializer.Deserialize<List<ParametrosJSON>>(jsonString);
                 dadosCombinados.AddRange(parteDadosCombinados);
                 File.Delete(arquivo);
+
+                iteracoesCombinarArquivos++;
+
+                BarraDeProgresso(iteracoesCombinarArquivos, arquivosTemporarios.Count, out int porcentagem, out string barraDeProgresso);
+                Console.Write($"\rCombinando arquivos temporários | {barraDeProgresso} {porcentagem}%");
             }
             return dadosCombinados;
         }
 
-        private void GerarArquivoJsonComThreads(string pastaDestino, GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, double limiteComTolerancia)
+        private void EscreverEmPartes(List<ParametrosJSON> parametrosJSONs, int numThreads, int tamanhoParte, JsonSerializerOptions options, List<string> arquivosTemporarios)
+        {
+            int iteracoesEscreverEmPartes = 0;
+            object lockObject = new();
+
+            Action<int> escreverParte = GerarArquivosTemporarios(parametrosJSONs, numThreads, tamanhoParte, arquivosTemporarios, options, lockObject);
+            Parallel.For(0, numThreads, i =>
+            {
+                escreverParte(i);
+                lock (lockObject)
+                {
+                    iteracoesEscreverEmPartes++;
+                    BarraDeProgresso(iteracoesEscreverEmPartes, numThreads, out int porcentagem, out string barraDeProgresso);
+                    Console.Write($"\rGerando arquivos temporários | {barraDeProgresso} {porcentagem}%");
+                }
+            });
+            Console.WriteLine();
+        }
+
+        private void EscreverArquivoComThreads(string pastaDestino, GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, double limiteComTolerancia)
         {
             try
             {
@@ -87,23 +119,10 @@ namespace Desafio_01
 
                 int numThreads = Environment.ProcessorCount;
                 int tamanhoParte = parametrosJSONs.Count / numThreads;
+                JsonSerializerOptions options = new() { WriteIndented = true };
 
                 List<string> arquivosTemporarios = [];
-                JsonSerializerOptions options = new() { WriteIndented = true };
-                int iteracoes = 0;
-                object lockObject = new();
-
-                Action<int> escreverParte = GerarArquivosTemporarios(parametrosJSONs, numThreads, tamanhoParte, arquivosTemporarios, options, lockObject);
-                Parallel.For(0, numThreads, i =>
-                {
-                    escreverParte(i);
-                    lock (lockObject)
-                    {
-                        iteracoes++;
-                        BarraDeProgresso(iteracoes, numThreads, out int porcentagem, out string barraDeProgresso);
-                        Console.Write($"\r{barraDeProgresso} {porcentagem}%");
-                    }
-                });
+                EscreverEmPartes(parametrosJSONs, numThreads, tamanhoParte, options, arquivosTemporarios);
 
                 List<ParametrosJSON> dadosCombinados = CombinarArquivosTemporarios(arquivosTemporarios);
 
@@ -133,7 +152,7 @@ namespace Desafio_01
 
             if (tamanhoArquivoDesejado <= limiteComTolerancia)
             {
-                GerarArquivoJsonComThreads(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
+                EscreverArquivoComThreads(pastaDestino, geradorStringAlfanumerico, quantidadeLoop, limiteComTolerancia);
                 Console.WriteLine(File.Exists(pastaDestino) ? "\nArquivo JSON atualizado." : "\nArquivo JSON criado.");
             }
             else
