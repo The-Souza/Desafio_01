@@ -18,9 +18,9 @@ namespace Desafio_01
             return JsonSerializer.Serialize(parametros, identacao);
         }
 
-        private void BarraDeProgresso(int total, int i, out int porcentagem, out string barraDeProgresso)
+        private void BarraDeProgresso(int total, int atual, out int porcentagem, out string barraDeProgresso)
         {
-            porcentagem = (int)(((double)i / total) * 100);
+            porcentagem = (int)(((double)atual / total) * 100);
             barraDeProgresso = "[" + new string('#', porcentagem / 2) + new string('-', 50 - porcentagem / 2) + "]";
         }
 
