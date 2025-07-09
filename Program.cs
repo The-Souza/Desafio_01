@@ -35,15 +35,8 @@ namespace Desafio_01
 
         private void MostarTamanhoArquivo(double tamanhoPadrao)
         {
-            if (tamanhoPadrao < 1000.00)
-            {
-                Console.WriteLine($"\nTamanho escolhido: {tamanhoPadrao}MB");
-            }
-            else if (tamanhoPadrao >= 1000.00)
-            {
-                double valorDoubleGB = Math.Round((tamanhoPadrao / 1000), 2);
-                Console.WriteLine($"\nTamanho escolhido: {valorDoubleGB}GB");
-            }
+            string tamanhoFormatado = tamanhoPadrao < 1000 ? $"{tamanhoPadrao}MB" : $"{Math.Round(tamanhoPadrao / 1000, 2)}GB";
+            Console.WriteLine($"\nTamanho escolhido: {tamanhoFormatado}");
         }
 
         private void MostrarDiretorio(string caminhoPadrao)
