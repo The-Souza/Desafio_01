@@ -32,18 +32,12 @@ namespace Desafio_01
 
         private long VerTamanhoArquivoAposFechar(string pastaDestino)
         {
-            long tamanhoBytes = new FileInfo(pastaDestino).Length;
-            double jsonEmMb = Math.Round((double)tamanhoBytes / (1024 * 1024), 2);
+            long bytes = new FileInfo(pastaDestino).Length;
+            double tamanhoMB = Math.Round((double)bytes / (1024 * 1024), 2);
 
-            if (jsonEmMb < 1000.00)
-            {
-                Console.WriteLine($"\nTamanho do arquivo (Após fechar): {jsonEmMb}MB");
-            }
-            else
-            {
-                Console.WriteLine($"\nTamanho do arquivo (Após fechar): {Math.Round(jsonEmMb / 1000, 2)}GB");
-            }
-            return tamanhoBytes;
+            string tamanhoFormatado = tamanhoMB < 1000 ? $"{tamanhoMB}MB" : $"{Math.Round(tamanhoMB / 1000, 2)}GB";
+            Console.WriteLine($"\nTamanho do arquivo (após fechamento): {tamanhoFormatado}");
+            return bytes;
         }
 
         private void EscreverArquivo(string pastaDestino, GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, double limiteComTolerancia)
