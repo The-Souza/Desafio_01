@@ -19,15 +19,15 @@ namespace Desafio_01
             return linha;
         }
 
-        private void BarraDeProgresso(int i, int quantidadeLoop, out int porcentagem, out string barraDeProgresso)
+        private void BarraDeProgresso(int total, int i, out int porcentagem, out string barraDeProgresso)
         {
-            porcentagem = (int)(((double)i / quantidadeLoop) * 100);
+            porcentagem = (int)(((double)i / total) * 100);
             barraDeProgresso = "[" + new string('#', porcentagem / 2) + new string('-', 50 - porcentagem / 2) + "]";
         }
 
-        private double TamanhoArquivoDuranteLoop(GeradorStringAlfanumerico gerador, int quantidadeLoop, ref long tamanhoBytes, int i)
+        private double TamanhoArquivoDuranteLoop(string linha, int quantidadeDeIteracoes, ref long tamanhoBytes, int i)
         {
-            tamanhoBytes += Encoding.UTF8.GetByteCount(GerarLinha(gerador) + (i < quantidadeLoop - 1 ? "," : ""));
+            tamanhoBytes += Encoding.UTF8.GetByteCount(linha + (i < quantidadeDeIteracoes - 1 ? "," : ""));
             return Math.Round((double)tamanhoBytes / (1024 * 1024), 2);
         }
 
