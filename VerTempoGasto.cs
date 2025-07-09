@@ -6,12 +6,12 @@ namespace Desafio_01
     {
         public void Conometro(string pastaRaiz, int valorTamanhoArquivo)
         {
-            GeradorArquivoJSON geradorArquivoJSON = new();
+            GeradorArquivoJSON gerador = new();
             Stopwatch stopwatch = new();
 
             stopwatch.Start();
 
-            geradorArquivoJSON.GerarArquivoJson(pastaRaiz, valorTamanhoArquivo);
+            gerador.GerarArquivoJson(pastaRaiz, valorTamanhoArquivo);
 
             stopwatch.Stop();
 

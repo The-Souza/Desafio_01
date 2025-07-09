@@ -206,15 +206,13 @@ namespace Desafio_01
             int iteracoesPorMb = 11655;
             int quantidadeDeIteracoes = tamanhoDesejadoEmMb * iteracoesPorMb;
 
-            if (tamanhoDesejadoEmMb < limiteMbComTolerancia)
-            {
-                EscreverArquivoJsonFinal(pastaDestino, gerador, quantidadeDeIteracoes, limiteMbComTolerancia);
-                Console.WriteLine(File.Exists(pastaDestino) ? "\nArquivo JSON atualizado." : "\nArquivo JSON criado.");
-            }
-            else
+            if (tamanhoDesejadoEmMb > limiteMbComTolerancia)
             {
                 Console.WriteLine($"\nArquivo não gerado, passou do limite de {limiteMbComTolerancia}MB.");
+                return;
             }
+            EscreverArquivoJsonFinal(pastaDestino, gerador, quantidadeDeIteracoes, limiteMbComTolerancia);
+            Console.WriteLine("\nArquivo JSON criado.");
         }
     }
 }
