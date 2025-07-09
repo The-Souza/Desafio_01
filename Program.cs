@@ -2,11 +2,12 @@ namespace Desafio_01
 {
     public class Program
     {
+        private const string nomeArquivo = "listaAlfanumericos.json";
         private string GetDiretorio(string definirDiretorio, string caminhoPadrao, string argumento1)
         {
             if (argumento1.StartsWith(definirDiretorio + "="))
             {
-                string valorStringDefinirDiretorio = argumento1.Substring(definirDiretorio.Length + 1);
+                string valorStringDefinirDiretorio = argumento1[(definirDiretorio.Length + 1)..];
                 caminhoPadrao = valorStringDefinirDiretorio;
             }
             else
@@ -20,7 +21,7 @@ namespace Desafio_01
         {
             if (argumento2.StartsWith(definirTamanhoArquivo + "="))
             {
-                string valorStringDefinirTamanhoArquivo = argumento2.Substring(definirTamanhoArquivo.Length + 1);
+                string valorStringDefinirTamanhoArquivo = argumento2[(definirTamanhoArquivo.Length + 1)..];
                 if (double.TryParse(valorStringDefinirTamanhoArquivo, out double resultado))
                 {
                     tamanhoPadrao = resultado;
@@ -42,15 +43,7 @@ namespace Desafio_01
         private void MostrarDiretorio(string caminhoPadrao)
         {
             Console.WriteLine($"\nLocal de destino: {caminhoPadrao}");
-
-            if (Directory.Exists(caminhoPadrao))
-            {
-                Console.WriteLine("\nO diretório existe.");
-            }
-            else
-            {
-                Console.WriteLine($"\nO diretório não existe.");
-            }
+            Console.WriteLine(Directory.Exists(caminhoPadrao) ? "\nO diretório existe." : $"\nO diretório não existe.");
         }
 
         public static void Main(string[] args)
@@ -68,7 +61,7 @@ namespace Desafio_01
                 string caminhoPadrao = "";
                 double tamanhoPadrao = 0;
 
-                if (argumentos.Length >= 2)
+                if (argumentos.Length >= 1)
                 {
                     string argumento1 = argumentos[1];
                     string argumento2 = argumentos[2];
@@ -78,7 +71,6 @@ namespace Desafio_01
 
                     VerTempoGasto verTempoGasto = new();
 
-                    string nomeArquivo = "listaAlfanumericos.json";
                     string caminhoCompleto = Path.Combine(caminhoPadrao, nomeArquivo);
 
                     program.MostrarDiretorio(caminhoPadrao);
