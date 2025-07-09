@@ -19,7 +19,7 @@ namespace Desafio_01
             return linha;
         }
 
-        private void BarraDeProgresso(int quantidadeLoop, int i, out int porcentagem, out string barraDeProgresso)
+        private void BarraDeProgresso(int i, int quantidadeLoop, out int porcentagem, out string barraDeProgresso)
         {
             porcentagem = (int)(((double)i / quantidadeLoop) * 100);
             barraDeProgresso = "[" + new string('#', porcentagem / 2) + new string('-', 50 - porcentagem / 2) + "]";
@@ -28,27 +28,17 @@ namespace Desafio_01
         private double TamanhoArquivoDuranteLoop(GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, ref long tamanhoBytes, int i)
         {
             tamanhoBytes += Encoding.UTF8.GetByteCount(GerarLinha(geradorStringAlfanumerico) + (i < quantidadeLoop - 1 ? "," : ""));
-            double jsonEmMB = (double)tamanhoBytes / (1024 * 1024);
-            double jsonEmMbFormatado = Math.Round(jsonEmMB, 2);
-            return jsonEmMbFormatado;
+            return Math.Round((double)tamanhoBytes / (1024 * 1024), 2);
         }
 
         private long VerTamanhoArquivoAposFechar(string pastaDestino)
         {
-            long tamanhoBytes = new FileInfo(pastaDestino).Length;
-            double jsonEmMbAposFechar = (double)tamanhoBytes / (1024 * 1024);
-            double jsonEmMbFormatadoAposFechar = Math.Round(jsonEmMbAposFechar, 2);
+            long bytes = new FileInfo(pastaDestino).Length;
+            double tamanhoMB = Math.Round((double)bytes / (1024 * 1024), 2);
 
-            if (jsonEmMbFormatadoAposFechar < 1000.00)
-            {
-                Console.WriteLine($"\nTamanho do arquivo (Após fechar): {jsonEmMbFormatadoAposFechar}MB");
-            }
-            else if (jsonEmMbFormatadoAposFechar >= 1000.00)
-            {
-                double jsonEmGbFormatadoAposFechar = Math.Round((jsonEmMbFormatadoAposFechar / 1000), 2);
-                Console.WriteLine($"\nTamanho do arquivo (Após fechar): {jsonEmGbFormatadoAposFechar}GB");
-            }
-            return tamanhoBytes;
+            string tamanhoFormatado = tamanhoMB < 1000 ? $"{tamanhoMB}MB" : $"{Math.Round(tamanhoMB / 1000, 2)}GB";
+            Console.WriteLine($"\nTamanho do arquivo (após fechamento): {tamanhoFormatado}");
+            return bytes;
         }
 
         private void EscreverArquivo(string pastaDestino, GeradorStringAlfanumerico geradorStringAlfanumerico, int quantidadeLoop, double limiteComTolerancia)
@@ -71,7 +61,7 @@ namespace Desafio_01
                     if(tamanhoArquivoDuranteLoop <= limiteComTolerancia)
                     {
                         writer.WriteLine(GerarLinha(geradorStringAlfanumerico) + (i < quantidadeLoop - 1 ? "," : ""));
-                        BarraDeProgresso(quantidadeLoop, i, out int porcentagem, out string barraDeProgresso);
+                        BarraDeProgresso(i, quantidadeLoop, out int porcentagem, out string barraDeProgresso);
                         tamanhoArquivoDuranteLoop = TamanhoArquivoDuranteLoop(geradorStringAlfanumerico, quantidadeLoop, ref tamanhoBytes, i);
 
                         quantidadeObjetos += 4;
@@ -91,7 +81,7 @@ namespace Desafio_01
                 Console.ResetColor();
                 Console.WriteLine(separador);
 
-                tamanhoBytes = VerTamanhoArquivoAposFechar(pastaDestino);
+                VerTamanhoArquivoAposFechar(pastaDestino);
             }
             catch (Exception ex)
             {
