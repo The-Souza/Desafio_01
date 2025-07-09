@@ -123,7 +123,7 @@ namespace Desafio_01
                     File.Delete(arquivosTemporarios[i]);
 
                     AtualizarProgresso("Combinando arquivos temporários", i + 1, arquivosTemporarios.Count);
-                    Thread.Sleep(100);
+                    Thread.Sleep(10);
                 }
                 catch (Exception ex)
                 {
