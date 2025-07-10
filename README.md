@@ -1,91 +1,88 @@
 # Gerador de Arquivo JSON
 
-<p align="center">
-  <img alt="Static Badge" src="https://img.shields.io/badge/LICENSE-MIT-blue">
-  <img alt="Static Badge" src="https://img.shields.io/badge/STATUS-EM_DESENVOLVIMENTO-green">
-  <img alt="Language" src="https://img.shields.io/badge/LINGUAGEM-C%23-blueviolet">
-</p>
+Projeto desenvolvido em C# (.NET 8) que gera um arquivo `.json` contendo uma lista de objetos com propriedades alfanuméricas aleatórias, com controle de tamanho de saída e uso eficiente de memória e CPU.
 
-## Descrição do Projeto
+---
 
-1. **Objetivo**
+## 📂 Estrutura dos Arquivos
 
-   Desenvolvido como uma aplicação de console em C# (.NET 8), este projeto gera um arquivo no formato JSON contendo uma coleção de objetos com exatamente quatro propriedades (A, B, C e D). Cada propriedade é preenchida com uma string alfanumérica aleatória de 6 caracteres.
+### 1. `Program.cs`
 
-2. **Especificações**
+Responsável por:
 
-   * **2.1. Aplicação Console**
+* Capturar e validar os argumentos passados via linha de comando:
 
-     * Requer dois parâmetros obrigatórios:
+  * `--output=<diretório de saída>`
+  * `--size=<tamanho em MB>`
+* Exibir o diretório e o tamanho formatado no console;
+* Iniciar o cronômetro e executar a geração do JSON através da classe `VerTempoGasto`.
 
-       * `--output`: Caminho de saída para o arquivo gerado.
-       * `--size`: Tamanho alvo do arquivo, em megabytes (MB).
+### 2. `GeradorStringAlfanumerico.cs`
 
-   * **2.2. Formato do JSON**
+Classe que gera strings alfanuméricas aleatórias de 6 caracteres. Funcionalidades:
 
-     * O arquivo final é composto por objetos com a estrutura:
+* Usa `StringBuilder` para eficiência;
+* Contém um método público que retorna uma string com letras e números aleatórios;
+* Utilizada repetidamente para preencher os campos A, B, C e D de cada objeto JSON.
 
-       ```json
-       { "A": "...", "B": "...", "C": "...", "D": "..." }
-       ```
+### 3. `VerTempoGasto.cs`
 
-   * **2.3. Dados Aleatórios**
+Classe utilitária que mede o tempo total de execução do processo. Funcionalidades:
 
-     * Cada campo (A, B, C, D) contém uma string alfanumérica com 6 caracteres gerada aleatoriamente.
+* Utiliza `System.Diagnostics.Stopwatch` para medir o tempo de execução;
+* Exibe o tempo decorrido no console ao final do processo.
 
-   * **2.4. Tamanho do Arquivo**
+### 4. `GeradorArquivoJSON.cs`
 
-     * Gera um arquivo com o tamanho aproximado desejado (tolerância de ±1%).
-     * O limite máximo é de 400MB.
-     * A quantidade de registros é ajustada dinamicamente durante a geração.
+A principal classe do projeto. Responsável por:
 
-   * **2.5. Performance & Escalabilidade**
+* Gerar uma lista de objetos com campos A, B, C e D preenchidos aleatoriamente;
+* Dividir os dados em partes e salvar como arquivos temporários paralelamente (uso de `Parallel.For`);
+* Combinar os arquivos temporários em um único JSON final, respeitando o limite de tamanho;
+* Exibir barras de progresso e estatísticas no console;
+* Validar o tamanho final do arquivo, com tolerância de ±1%;
+* Apagar arquivos temporários ao final ou em caso de erro.
 
-     * Não carrega toda a coleção em memória.
-     * Utiliza streaming para escrita no arquivo com `System.Text.Json`.
-     * O código informa como é feita a estimativa de registros e controle do loop.
+---
 
-## Funcionalidades do Projeto
+## ⚙️ Execução
 
-* **Argumentos de Linha de Comando**: Recebe `--output` e `--size`. Verifica a existência do caminho de saída e imprime mensagens apropriadas. Converte e imprime o tamanho desejado em MB ou GB.
-
-* **Tempo Gasto**: Utiliza um cronômetro para calcular e exibir o tempo total gasto na geração do arquivo JSON.
-
-* **Gerador de Arquivo JSON**:
-
-  * Geração de registros com strings aleatórias;
-  * Exibição de barra de progresso;
-  * Cálculo e exibição do tamanho do arquivo durante a geração;
-  * Interrupção da geração ao atingir o tamanho alvo com tolerância.
-
-* **Gerador de String Alfanumérica**:
-
-  * Um método privado sorteia caracteres de uma string base alfanumérica;
-  * Um segundo método expõe essa funcionalidade publicamente.
-
-## Exemplo de Execução
+### Comando:
 
 ```bash
-dotnet run --output="C:\Users\guilherme2000925\Desktop\PastaDestino" --size=400
+Desafio_01.exe --output=C:\Destino --size=200
 ```
 
-## Rodando o Código
+### Exemplo de saída:
 
-<p align="center">
-  <img src="img/img1.png" width="800" height="450" alt="imagem1">
-  <img src="img/img2.png" width="800" height="450" alt="imagem2">
-  <img src="img/img3.png" width="800" height="450" alt="imagem3">
-  <img src="img/img4.png" width="800" height="450" alt="imagem4">
-</p>
+```
+Tamanho escolhido: 200MB
+Local de destino: C:\Destino
+O diretório existe.
 
-## Pré-requisitos
+------------------------------------------------------------------------------------------------------------------------
 
-* .NET 8 SDK instalado
-* Visual Studio ou qualquer editor C#
-* Sistema operacional Windows recomendado (por enquanto)
+Iniciando operação...
+Gerando lista...
+Objetos criados: 9324000
+...
+Tempo gasto: 00:01:23.456
+Arquivo JSON criado.
+```
 
-## Técnicas e Tecnologias Utilizadas
+---
 
-* `System.Diagnostics`
-* `System.Text.Json`
-* `System.Text`
+## 🧰 Tecnologias Utilizadas
+
+* .NET 8
+* C#
+* System.Text.Json
+* System.Diagnostics
+* Programação Paralela (`Parallel.For`)
+* Visual Studio
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
