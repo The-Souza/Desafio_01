@@ -7,12 +7,11 @@ namespace Desafio_01
         private const string PastaTemporaria = @"C:\Users\guilherme2000925\Desktop\PastaDestino\ArquivosTemporarios";
         private const double LimiteMb = 400.0;
         private const double Tolerancia = 0.01;
-        private const int TamanhoStringAlfanumerica = 6;
         private const int IteracoesPorMb = 11655;
 
         public void GerarArquivoJson(string caminhoDestino, int tamanhoDesejadoMb)
         {
-            if (tamanhoDesejadoMb > LimiteMb + LimiteMb * Tolerancia)
+            if (tamanhoDesejadoMb > LimiteMb + (LimiteMb * Tolerancia))
             {
                 Console.WriteLine($"\nArquivo não gerado: tamanho ultrapassa limite de {LimiteMb}MB.");
                 return;
@@ -21,11 +20,11 @@ namespace Desafio_01
             LimparPastaTemporaria();
 
             int quantidadeIteracoes = tamanhoDesejadoMb * IteracoesPorMb;
-            var geradorStrings = new GeradorStringAlfanumerico();
+            GeradorStringAlfanumerico geradorStrings = new();
 
             Console.WriteLine("\nIniciando geração dos dados...");
 
-            var dados = CriarParametros(geradorStrings, quantidadeIteracoes);
+            var dados = CriarListaDeParametrosJson(geradorStrings, quantidadeIteracoes);
 
             int numThreads = Environment.ProcessorCount;
             int divisao = dados.Count / numThreads;
@@ -34,7 +33,7 @@ namespace Desafio_01
 
             EscreverArquivosTemporarios(dados, numThreads, divisao, arquivosTemporarios, opcoesJson);
 
-            if (!CombinarArquivosTemporarios(caminhoDestino, arquivosTemporarios, opcoesJson, tamanhoDesejadoMb))
+            if (!CombinarArquivosTemporarios(caminhoDestino, arquivosTemporarios, opcoesJson))
             {
                 Console.WriteLine("Falha ao gerar arquivo final devido ao tamanho excedido.");
                 return;
@@ -66,17 +65,17 @@ namespace Desafio_01
             }
         }
 
-        private List<ParametrosJSON> CriarParametros(GeradorStringAlfanumerico gerador, int quantidade)
+        private List<ParametrosJSON> CriarListaDeParametrosJson(GeradorStringAlfanumerico gerador, int quantidade)
         {
             var lista = new List<ParametrosJSON>(quantidade);
             for (int i = 0; i < quantidade; i++)
             {
                 lista.Add(new ParametrosJSON
                 {
-                    A = gerador.Gerar(),
-                    B = gerador.Gerar(),
-                    C = gerador.Gerar(),
-                    D = gerador.Gerar()
+                    A = gerador.GerarString(),
+                    B = gerador.GerarString(),
+                    C = gerador.GerarString(),
+                    D = gerador.GerarString()
                 });
             }
             return lista;
@@ -91,10 +90,10 @@ namespace Desafio_01
                 int inicio = i * divisao;
                 int fim = (i == numThreads - 1) ? dados.Count : (i + 1) * divisao;
 
-                var subset = dados.GetRange(inicio, fim - inicio);
+                var parte = dados.GetRange(inicio, fim - inicio);
                 string caminho = Path.Combine(PastaTemporaria, $"dadosTemp_{i}.json");
 
-                string json = JsonSerializer.Serialize(subset, opcoes);
+                string json = JsonSerializer.Serialize(parte, opcoes);
                 File.WriteAllText(caminho, json);
 
                 lock (trava)
@@ -103,11 +102,10 @@ namespace Desafio_01
                     AtualizarProgresso("Gerando arquivos temporários", arquivos.Count, numThreads);
                 }
             });
-
             Console.WriteLine();
         }
 
-        private bool CombinarArquivosTemporarios(string caminhoDestino, List<string> arquivosTemporarios, JsonSerializerOptions opcoes, int tamanhoDesejadoMb)
+        private bool CombinarArquivosTemporarios(string caminhoDestino, List<string> arquivosTemporarios, JsonSerializerOptions opcoes)
         {
             double limiteComTolerancia = LimiteMb + (LimiteMb * Tolerancia);
 
@@ -170,7 +168,7 @@ namespace Desafio_01
         {
             long tamanhoBytes = new FileInfo(caminhoArquivo).Length;
             double tamanhoMb = tamanhoBytes / (1024.0 * 1024.0);
-            return tamanhoMb < 1000 ? $"{tamanhoMb:F2} MB" : $"{tamanhoMb / 1000:F2} GB";
+            return tamanhoMb < 1000 ? $"{tamanhoMb:F2}MB" : $"{tamanhoMb / 1000:F2}GB";
         }
     }
 }

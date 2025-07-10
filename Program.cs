@@ -57,8 +57,8 @@ namespace Desafio_01
         private static void ExibirInformacoes(string diretorio, double tamanhoMb)
         {
             Console.WriteLine($"\nLocal de destino: {diretorio}");
-            Console.WriteLine(Directory.Exists(diretorio) ? "O diretório existe." : "O diretório não existe.");
-            Console.WriteLine($"Tamanho escolhido: {(tamanhoMb < 1000 ? $"{tamanhoMb} MB" : $"{tamanhoMb / 1000:F2} GB")}");
+            Console.WriteLine(Directory.Exists(diretorio) ? "\nO diretório existe." : "\nO diretório não existe.");
+            Console.WriteLine($"Tamanho escolhido: {(tamanhoMb < 1000 ? $"{tamanhoMb}MB" : $"{tamanhoMb / 1000:F2}GB")}");
         }
     }
 }
