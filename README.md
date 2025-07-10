@@ -1,126 +1,93 @@
-<h1 align="center">
-   Gerador de Arquivo JSON
-</h1>
+# Gerador de Arquivo JSON
 
-<p align="center">
-    <img alt="Static Badge" src="https://img.shields.io/badge/LICENSE-MIT-blue">
-    <img alt="Static Badge" src="https://img.shields.io/badge/STATUS-EM_DESENVOLVIMENTO-green">
-</p>
+Projeto desenvolvido em C# (.NET 8) que gera um arquivo `.json` contendo uma lista de objetos com propriedades alfanuméricas aleatórias, com controle de tamanho de saída e uso eficiente de memória e CPU.
 
-<h2>
-    Descrição do Projeto
-</h2>
+---
 
-<ol>
-    <li>
-        <strong>Objetivo</strong>
-        <p>
-            Desenvolvido usando Console Application em C# que gera um arquivo no formato JSON
-            contendo uma coleção de objetos com exatamente 4 propriedades (A, B, C e D). 
-            Cada propriedade é preenchida com uma string alfanumérica aleatória. 
-        <p>
-    </li>
-    <li>
-        <strong>Especificações</strong>
-        <ul>
-            2.1. <strong>Aplicação Console</strong>
-            <ul>
-                É necessário passar dois parâmetros: Caminho de saída (--output) e
-                Tamanho alvo do arquivo, em megabytes (--size).
-            </ul>
-            2.2. <strong>Formato do JSON</strong>
-            <ul>
-                O arquivo final é estruturado como uma raiz de objetos 
-                (ex: {"A": "......", "B": "......", "C": "......","D": "......"}).
-            </ul>
-            2.3. <strong>Dados Aleatórios</strong>
-            <ul>
-                Cada campo (A, B, C, D) contém ums string alfanumérica de 6 caracteres.
-            </ul>
-            2.4. <strong>Tamanho do Arquivo</strong>
-            <ul>
-                <li>
-                    Gera um arquivo com o tamanho escolhido com ±1% de tolerância. 
-                    O tamanho limite foi estabelecido em 400MB.
-                </li>
-                <li>
-                    A quantidade de registros é calculada dinamicamente a cada escrita no arquivo.
-                </li>
-            </ul>
-            2.5. <strong>Performance & Escalabilidade</strong>
-            <ul>
-                <li>
-                    Não carrega toda a coleção em memória antes de gravar.
-                </li>
-                <li>
-                    É utilizado técnicas de streaming de saída para minimizar consumo de RAM (ex: System.Text.Json).
-                </li>
-                <li>
-                    No código mostra como foi calculado o número de registros e o valor para o loop de gravação.
-                </li>
-            </ul>
-        </ul>
-    </li>
-</ol>
+## 📂 Estrutura dos Arquivos
 
-<h2>
-  Funcionalidades do Projeto
-</h2>
+### 1. `Program.cs`
 
-<ul>
-    <li>
-        <strong>Linha de Comando</strong>: Via linha de comando é necessário passar dois argumentos para iniciar 
-        (ex: --output=C:\\Users\\guilherme2000925\\Desktop\\PastaDestino --size=400), é utilizado dois métodos 
-        para tratativa dos argumentos onde é retirado o caminho de saída e o tamanho do arquivo, após isso é usado
-        dois métodos que checa se o caminho existe e imprime a mensagem e o outro método imprime o tamanho convertido 
-        em MB ou GB se necessário.
-    </li>
-    <li>
-        <strong>Tempo Gasto</strong>: É utilizado um método que conômetra o tempo que leva para gerar o arquivo JSON
-        e imprime no terminal o tempo após finalizar a tarefa.
-    </li>
-    <li>
-        <strong>Gerador Arquivo JSON</strong>: Nesse arquivo é utilizado vários métodos, temos um que gera a linha
-        que irá ser serializada, um que imprime a barra de progresso da tarefa, um que calcula o tamanho do arquivo
-        enquanto ele é gerado, outro que mostra o tamanho final do arquivo após ele ser finalizado e o método de escrita
-        onde ele escreve através de um for e interrompe a geração e fecha o arquivo caso ele passe do limite de tolerância.
-    </li>
-    <li>
-        <strong>Gerador String Alfanumérica</strong>: É utilizado dois métodos, um privado que gera a string 
-        e outro público que chama o método privado, o método privado tem uma string alfanumérica e com ela gera de forma  
-        aleatória uma nova string usando for e adiona o carácter em uma nova variável.
-    </li>
-</ul>
+Responsável por:
 
-<h2>
-  Rodando o código
-</h2>
+* Capturar e validar os argumentos passados via linha de comando:
 
-<p align="center">
-    <img src="img/img1.png" width="800" height="450" alt="imagem1">
-    <img src="img/img2.png" width="800" height="450" alt="imagem2">
-    <img src="img/img3.png" width="800" height="450" alt="imagem3">
-    <img src="img/img4.png" width="800" height="450" alt="imagem4">
-</p>
+  * `--output=<diretório de saída>`
+  * `--size=<tamanho em MB>`
+* Exibir o diretório e o tamanho formatado no console;
+* Iniciar o cronômetro e executar a geração do JSON através da classe `VerTempoGasto`.
 
-<h2>
-  Técnicas e Tecnologias Utilizadas
-</h2>
+### 2. `GeradorStringAlfanumerico.cs`
 
-<ul>
-    <li>
-        <strong>System.Diagnostics</strong>
-    </li>
-    <li>
-        <strong>System.Text.Json</strong>
-    </li>
-    <li>
-        <strong>System.Text</strong>
-    </li>
-    <li>
-        <strong>.NET 8</strong>
-    </li>
-    <li>
-        <strong>Visual Studio</strong>
-    </li>
-</ul>
+Classe que gera strings alfanuméricas aleatórias de 6 caracteres. Funcionalidades:
+
+* Usa `StringBuilder` para eficiência;
+* Contém um método público que retorna uma string com letras e números aleatórios;
+* Utilizada repetidamente para preencher os campos A, B, C e D de cada objeto JSON.
+
+### 3. `VerTempoGasto.cs`
+
+Classe utilitária que mede o tempo total de execução do processo. Funcionalidades:
+
+* Utiliza `System.Diagnostics.Stopwatch` para medir o tempo de execução;
+* Exibe o tempo decorrido no console ao final do processo.
+
+### 4. `GeradorArquivoJSON.cs`
+
+A principal classe do projeto. Responsável por:
+
+* Gerar uma lista de objetos com campos A, B, C e D preenchidos aleatoriamente;
+* Exibir barras de progresso e estatísticas no console;
+* Validar o tamanho final do arquivo, com tolerância de ±1%;
+
+---
+
+## ⚙️ Execução
+
+### Comando:
+
+```bash
+Desafio_01.exe --output=C:\Destino --size=200
+```
+
+### Exemplo de saída:
+
+```
+Local de destino: C:\Destino
+
+O diretório existe.
+
+Tamanho escolhido: 400MB
+
+------------------------------------------------------------------------------------------------------------------------
+
+Iniciando operação...
+
+[#################################################-] 99% | Objetos criados: 21600000 | Tamanho arquivo JSON: 391,39MB
+
+Operação concluída!
+
+------------------------------------------------------------------------------------------------------------------------
+
+Tamanho do arquivo (após fechamento): 401,68MB
+
+Arquivo JSON criado.
+
+Tempo gasto: 00:02:09.126
+```
+
+---
+
+## 🧰 Tecnologias Utilizadas
+
+* .NET 8
+* C#
+* System.Text.Json
+* System.Diagnostics
+* Visual Studio
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
