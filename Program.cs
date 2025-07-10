@@ -1,86 +1,64 @@
+using System;
+using System.IO;
+
 namespace Desafio_01
 {
     public class Program
     {
-        private const string nomeArquivo = "listaAlfanumericos.json";
-
-        private bool TryObterDiretorio(string definirDiretorio, string argumento, out string caminho)
-        {
-            caminho = string.Empty;
-            if (argumento.StartsWith(definirDiretorio + "="))
-            {
-                caminho = argumento[(definirDiretorio.Length + 1)..];
-                return true;
-            }
-            Console.WriteLine("\nArgumento de diretório inválido. Use --output=<caminho>.");
-            return false;
-        }
-
-        private bool TryObterTamanhoArquivo(string definirTamanhoArquivo, string argumento, out double tamanho)
-        {
-            tamanho = 0;
-            if (argumento.StartsWith(definirTamanhoArquivo + "="))
-            {
-                string valor = argumento[(definirTamanhoArquivo.Length + 1)..];
-                if (double.TryParse(valor, out double resultado))
-                {
-                    tamanho = resultado;
-                    return true;
-                }
-                Console.WriteLine("\nTamanho inválido. Use um valor numérico para --size.");
-                return false;
-            }
-            Console.WriteLine("\nArgumento de tamanho inválido. Use --size=<valor em MB>.");
-            return false;
-        }
-
-        private void MostrarTamanhoArquivo(double tamanho)
-        {
-            string tamanhoFormatado = tamanho < 1000 ? $"{tamanho}MB" : $"{Math.Round(tamanho / 1000, 2)}GB";
-            Console.WriteLine($"\nTamanho escolhido: {tamanhoFormatado}");
-        }
-
-        private void MostrarDiretorio(string caminho)
-        {
-            Console.WriteLine($"\nLocal de destino: {caminho}");
-            Console.WriteLine(Directory.Exists(caminho) ? "\nO diretório existe." : "\nO diretório não existe.");
-        }
+        private const string NomeArquivo = "listaAlfanumericos.json";
 
         public static void Main(string[] args)
         {
+            if (!ValidarArgumentos(args, out string diretorio, out double tamanhoMb))
+            {
+                Console.WriteLine("Uso: --output=<caminho> --size=<tamanho_em_MB>");
+                return;
+            }
+
+            ExibirInformacoes(diretorio, tamanhoMb);
+
+            var caminhoCompleto = Path.Combine(diretorio, NomeArquivo);
+            var cronometro = new VerTempoGasto();
+
             try
             {
-                Program program = new();
-
-                string[] argumentos = Environment.GetCommandLineArgs();
-                string definirDiretorio = "--output";
-                string definirTamanho = "--size";
-
-                if (argumentos.Length < 3)
-                {
-                    Console.WriteLine("\nUso correto: Desafio_01.exe --output=<caminho> --size=<tamanho_em_MB>");
-                    return;
-                }
-
-                string argumento1 = argumentos[1];
-                string argumento2 = argumentos[2];
-
-                if (!program.TryObterDiretorio(definirDiretorio, argumento1, out string caminho)) return;
-                if (!program.TryObterTamanhoArquivo(definirTamanho, argumento2, out double tamanho)) return;
-
-                program.MostrarDiretorio(caminho);
-                program.MostrarTamanhoArquivo(tamanho);
-
-                string caminhoCompleto = Path.Combine(caminho, nomeArquivo);
-
-                VerTempoGasto verTempoGasto = new();
-                int tamanhoInt = Convert.ToInt32(tamanho);
-                verTempoGasto.Cronometro(caminhoCompleto, tamanhoInt);
+                cronometro.Cronometro(caminhoCompleto, (int)tamanhoMb);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\nErro inesperado: {ex.Message}");
+                Console.WriteLine($"Erro inesperado: {ex.Message}");
             }
+        }
+
+        private static bool ValidarArgumentos(string[] args, out string diretorio, out double tamanhoMb)
+        {
+            diretorio = string.Empty;
+            tamanhoMb = 0;
+
+            if (args == null || args.Length < 2)
+                return false;
+
+            diretorio = ObterValorParametro(args[0], "--output=");
+            var tamanhoStr = ObterValorParametro(args[1], "--size=");
+
+            if (string.IsNullOrWhiteSpace(diretorio) || string.IsNullOrWhiteSpace(tamanhoStr) || !double.TryParse(tamanhoStr, out tamanhoMb))
+                return false;
+
+            return true;
+        }
+
+        private static string ObterValorParametro(string argumento, string prefixo)
+        {
+            if (argumento.StartsWith(prefixo, StringComparison.OrdinalIgnoreCase))
+                return argumento.Substring(prefixo.Length);
+            return string.Empty;
+        }
+
+        private static void ExibirInformacoes(string diretorio, double tamanhoMb)
+        {
+            Console.WriteLine($"\nLocal de destino: {diretorio}");
+            Console.WriteLine(Directory.Exists(diretorio) ? "O diretório existe." : "O diretório não existe.");
+            Console.WriteLine($"Tamanho escolhido: {(tamanhoMb < 1000 ? $"{tamanhoMb} MB" : $"{tamanhoMb / 1000:F2} GB")}");
         }
     }
 }

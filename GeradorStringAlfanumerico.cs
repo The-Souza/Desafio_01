@@ -1,28 +1,23 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace Desafio_01
 {
     public class GeradorStringAlfanumerico
     {
-        private string GerarStringAlfanumerico()
-        {
-            int comprimento = 6;
-            string caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            Random random = new();
-            StringBuilder alfanumerico = new(comprimento);
+        private const int Comprimento = 6;
+        private const string Caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        private static readonly Random Random = new();
 
-            for (int i = 0; i < comprimento; i++)
+        public string Gerar()
+        {
+            var builder = new StringBuilder(Comprimento);
+            for (int i = 0; i < Comprimento; i++)
             {
-                int indiceAleatorio = random.Next(0, caracteres.Length);
-                alfanumerico.Append(caracteres[indiceAleatorio]);
+                int indice = Random.Next(Caracteres.Length);
+                builder.Append(Caracteres[indice]);
             }
-            return alfanumerico.ToString();
-        }
-
-        public string GetAlfanumericoAleatoria()
-        {
-            string alfanumericoAleatoria = GerarStringAlfanumerico();
-            return alfanumericoAleatoria;
+            return builder.ToString();
         }
     }
 }

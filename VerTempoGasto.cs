@@ -1,28 +1,27 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace Desafio_01
 {
     public class VerTempoGasto
     {
-        public void Cronometro(string pastaRaiz, int valorTamanhoArquivo)
+        public void Cronometro(string caminhoArquivo, int tamanhoMb)
         {
-            GeradorArquivoJSON gerador = new();
-            Stopwatch stopwatch = new();
+            var gerador = new GeradorArquivoJSON();
+            var stopwatch = Stopwatch.StartNew();
 
-            stopwatch.Start();
-
-            gerador.GerarArquivoJson(pastaRaiz, valorTamanhoArquivo);
+            gerador.GerarArquivoJson(caminhoArquivo, tamanhoMb);
 
             stopwatch.Stop();
+            ExibirTempoGasto(stopwatch.Elapsed);
+        }
 
-            TimeSpan tempoGasto = stopwatch.Elapsed;
-            string tempoFormatado = tempoGasto.ToString("hh\\:mm\\:ss\\.fff");
+        private void ExibirTempoGasto(TimeSpan tempo)
+        {
+            if (tempo.TotalSeconds < 1) return;
 
-            if (stopwatch.ElapsedMilliseconds > 1000)
-            {
-                Console.WriteLine($"\nTempo gasto: {tempoFormatado}");
-            }
+            string tempoFormatado = tempo.ToString(@"hh\:mm\:ss\.fff");
+            Console.WriteLine($"\nTempo gasto: {tempoFormatado}");
         }
     }
 }
-
