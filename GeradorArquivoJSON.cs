@@ -30,30 +30,7 @@ namespace Desafio_01
             {
                 int numThreads = Environment.ProcessorCount;
                 int tamanhoParte = quantidadeDeIteracoes / numThreads;
-                List<List<string>> blocos = [];
-
-                Parallel.For(0, numThreads, i =>
-                {
-                    List<string> bloco = [];
-                    for (int j = 0; j < tamanhoParte; j++)
-                    {
-                        int indexGlobal = i * tamanhoParte + j;
-                        bloco.Add(GerarLinha(gerador));
-                    }
-                    lock (blocos)
-                    {
-                        blocos.Add(bloco);
-                    }
-                });
-
-                List<string> todasLinhas = [.. blocos.SelectMany(b => b)];
-                if (todasLinhas.Count < quantidadeDeIteracoes)
-                {
-                    for (int i = todasLinhas.Count; i < quantidadeDeIteracoes; i++)
-                    {
-                        todasLinhas.Add(GerarLinha(gerador));
-                    }
-                }
+                List<string> todasLinhas = GerarListaEmParalelo(gerador, quantidadeDeIteracoes, numThreads, tamanhoParte);
 
                 using StreamWriter writer = new(pastaDestino);
                 long bytes = 0;
@@ -96,7 +73,36 @@ namespace Desafio_01
                 Console.WriteLine($"\nException: {ex.Message}");
             }
         }
-        
+
+        private List<string> GerarListaEmParalelo(GeradorStringAlfanumerico gerador, int quantidadeDeIteracoes, int numThreads, int tamanhoParte)
+        {
+            List<List<string>> blocos = [];
+
+            Parallel.For(0, numThreads, i =>
+            {
+                List<string> bloco = [];
+                for (int j = 0; j < tamanhoParte; j++)
+                {
+                    int indexGlobal = i * tamanhoParte + j;
+                    bloco.Add(GerarLinha(gerador));
+                }
+                lock (blocos)
+                {
+                    blocos.Add(bloco);
+                }
+            });
+
+            List<string> todasLinhas = [.. blocos.SelectMany(b => b)];
+            if (todasLinhas.Count < quantidadeDeIteracoes)
+            {
+                for (int i = todasLinhas.Count; i < quantidadeDeIteracoes; i++)
+                {
+                    todasLinhas.Add(GerarLinha(gerador));
+                }
+            }
+            return todasLinhas;
+        }
+
         private string GerarLinha(GeradorStringAlfanumerico gerador)
         {
             JsonSerializerOptions identacao = new() { WriteIndented = true };
