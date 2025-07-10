@@ -43,10 +43,10 @@ namespace Desafio_01
                 return;
             }
 
+            Console.WriteLine(separador);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nArquivo JSON criado com sucesso!");
             Console.ResetColor();
-            Console.WriteLine(separador);
         }
 
         private void LimparPastaTemporaria()
