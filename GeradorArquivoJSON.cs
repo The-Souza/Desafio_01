@@ -30,11 +30,11 @@ namespace Desafio_01
             {
                 int numThreads = Environment.ProcessorCount;
                 int tamanhoParte = quantidadeDeIteracoes / numThreads;
-                List<List<string>> blocos = new();
+                List<List<string>> blocos = [];
 
                 Parallel.For(0, numThreads, i =>
                 {
-                    List<string> bloco = new();
+                    List<string> bloco = [];
                     for (int j = 0; j < tamanhoParte; j++)
                     {
                         int indexGlobal = i * tamanhoParte + j;
