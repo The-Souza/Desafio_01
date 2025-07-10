@@ -5,15 +5,15 @@ namespace Desafio_01
 {
     public class GeradorArquivoJSON
     {
-        private string GerarLinha(GeradorStringAlfanumerico geradorStringAlfanumerico)
+        private string GerarLinha(GeradorStringAlfanumerico gerador)
         {
             JsonSerializerOptions identacao = new() { WriteIndented = true };
             var parametros = new ParametrosJSON
             {
-                A = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
-                B = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
-                C = geradorStringAlfanumerico.GetAlfanumericoAleatoria(),
-                D = geradorStringAlfanumerico.GetAlfanumericoAleatoria()
+                A = gerador.GetAlfanumericoAleatoria(),
+                B = gerador.GetAlfanumericoAleatoria(),
+                C = gerador.GetAlfanumericoAleatoria(),
+                D = gerador.GetAlfanumericoAleatoria()
             };
             var linha = JsonSerializer.Serialize(parametros, identacao);
             return linha;
@@ -25,10 +25,10 @@ namespace Desafio_01
             barraDeProgresso = "[" + new string('#', porcentagem / 2) + new string('-', 50 - porcentagem / 2) + "]";
         }
 
-        private double TamanhoArquivoDuranteLoop(GeradorStringAlfanumerico gerador, int quantidadeDeIteracoes, ref long tamanhoBytes, int i)
+        private double TamanhoArquivoDuranteLoop(GeradorStringAlfanumerico gerador, int quantidadeDeIteracoes, ref long bytes, int i)
         {
-            tamanhoBytes += Encoding.UTF8.GetByteCount(gerador + (i < quantidadeDeIteracoes - 1 ? "," : ""));
-            return Math.Round((double)tamanhoBytes / (1024 * 1024), 2);
+            bytes += Encoding.UTF8.GetByteCount(GerarLinha(gerador) + (i < quantidadeDeIteracoes - 1 ? "," : ""));
+            return Math.Round((double)bytes / (1024 * 1024), 2);
         }
 
         private long VerTamanhoArquivoAposFechar(string pastaDestino)
@@ -46,7 +46,7 @@ namespace Desafio_01
             try
             {
                 using StreamWriter writer = new(pastaDestino);
-                int totalObjetos = 0;
+                int quantidadeObjetos = 0;
                 long bytes = 0;
                 double tamanhoArquivoDuranteLoop = 0;
                 string separador = "\n------------------------------------------------------------------------------------------------------------------------";
@@ -57,15 +57,15 @@ namespace Desafio_01
                 writer.WriteLine("[");
                 for (int i = 0; i < quantidadeDeIteracoes; i++)
                 {
-                    if(tamanhoArquivoDuranteLoop <= limiteMbComTolerancia)
+                    if (tamanhoArquivoDuranteLoop <= limiteMbComTolerancia)
                     {
                         writer.WriteLine(GerarLinha(gerador) + (i < quantidadeDeIteracoes - 1 ? "," : ""));
-                        BarraDeProgresso(i, quantidadeDeIteracoes, out int porcentagem, out string barraDeProgresso);
+                        BarraDeProgresso(quantidadeDeIteracoes, i, out int porcentagem, out string barraDeProgresso);
                         tamanhoArquivoDuranteLoop = TamanhoArquivoDuranteLoop(gerador, quantidadeDeIteracoes, ref bytes, i);
 
-                        totalObjetos += 4;
+                        quantidadeObjetos += 4;
 
-                        Console.Write($"\r{barraDeProgresso} {porcentagem}% | Objetos criados: {totalObjetos} | Tamanho arquivo JSON: {tamanhoArquivoDuranteLoop}MB");
+                        Console.Write($"\r{barraDeProgresso} {porcentagem}% | Objetos criados: {quantidadeObjetos} | Tamanho arquivo JSON: {tamanhoArquivoDuranteLoop}MB");
                     }
                     else
                     {
