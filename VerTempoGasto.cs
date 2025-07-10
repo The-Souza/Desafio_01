@@ -4,7 +4,7 @@ namespace Desafio_01
 {
     public class VerTempoGasto
     {
-        public void Conometro(string pastaRaiz, int valorTamanhoArquivo)
+        public void Cronometro(string pastaRaiz, int valorTamanhoArquivo)
         {
             GeradorArquivoJSON gerador = new();
             Stopwatch stopwatch = new();

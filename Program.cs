@@ -3,90 +3,83 @@ namespace Desafio_01
     public class Program
     {
         private const string nomeArquivo = "listaAlfanumericos.json";
-        private string GetDiretorio(string definirDiretorio, string caminhoPadrao, string argumento1)
+
+        private bool TryObterDiretorio(string definirDiretorio, string argumento, out string caminho)
         {
-            if (argumento1.StartsWith(definirDiretorio + "="))
+            caminho = string.Empty;
+            if (argumento.StartsWith(definirDiretorio + "="))
             {
-                string valorStringDefinirDiretorio = argumento1[(definirDiretorio.Length + 1)..];
-                caminhoPadrao = valorStringDefinirDiretorio;
+                caminho = argumento[(definirDiretorio.Length + 1)..];
+                return true;
             }
-            else
-            {
-                Console.WriteLine($"\nValor inválido.");
-            }
-            return caminhoPadrao;
+            Console.WriteLine("\nArgumento de diretório inválido. Use --output=<caminho>.");
+            return false;
         }
 
-        private double GetTamanhoArquivo(string definirTamanhoArquivo, double tamanhoPadrao, string argumento2)
+        private bool TryObterTamanhoArquivo(string definirTamanhoArquivo, string argumento, out double tamanho)
         {
-            if (argumento2.StartsWith(definirTamanhoArquivo + "="))
+            tamanho = 0;
+            if (argumento.StartsWith(definirTamanhoArquivo + "="))
             {
-                string valorStringDefinirTamanhoArquivo = argumento2[(definirTamanhoArquivo.Length + 1)..];
-                if (double.TryParse(valorStringDefinirTamanhoArquivo, out double resultado))
+                string valor = argumento[(definirTamanhoArquivo.Length + 1)..];
+                if (double.TryParse(valor, out double resultado))
                 {
-                    tamanhoPadrao = resultado;
+                    tamanho = resultado;
+                    return true;
                 }
-                else
-                {
-                    Console.WriteLine($"\nValor inválido.");
-                }
+                Console.WriteLine("\nTamanho inválido. Use um valor numérico para --size.");
+                return false;
             }
-            return tamanhoPadrao;
+            Console.WriteLine("\nArgumento de tamanho inválido. Use --size=<valor em MB>.");
+            return false;
         }
 
-        private void MostarTamanhoArquivo(double tamanhoPadrao)
+        private void MostrarTamanhoArquivo(double tamanho)
         {
-            string tamanhoFormatado = tamanhoPadrao < 1000 ? $"{tamanhoPadrao}MB" : $"{Math.Round(tamanhoPadrao / 1000, 2)}GB";
+            string tamanhoFormatado = tamanho < 1000 ? $"{tamanho}MB" : $"{Math.Round(tamanho / 1000, 2)}GB";
             Console.WriteLine($"\nTamanho escolhido: {tamanhoFormatado}");
         }
 
-        private void MostrarDiretorio(string caminhoPadrao)
+        private void MostrarDiretorio(string caminho)
         {
-            Console.WriteLine($"\nLocal de destino: {caminhoPadrao}");
-            Console.WriteLine(Directory.Exists(caminhoPadrao) ? "\nO diretório existe." : $"\nO diretório não existe.");
+            Console.WriteLine($"\nLocal de destino: {caminho}");
+            Console.WriteLine(Directory.Exists(caminho) ? "\nO diretório existe." : "\nO diretório não existe.");
         }
 
         public static void Main(string[] args)
         {
-            // cd C:\Users\guilherme2000925\source\repos\Desafio_01\bin\Debug\net8.0
-            // Desafio_01.exe --output=C:\Users\guilherme2000925\Desktop\PastaDestino --size=400
             try
             {
-                ArgumentNullException.ThrowIfNull(args);
                 Program program = new();
 
                 string[] argumentos = Environment.GetCommandLineArgs();
                 string definirDiretorio = "--output";
-                string definirTamanhoArquivo = "--size";
-                string caminhoPadrao = "";
-                double tamanhoPadrao = 0;
+                string definirTamanho = "--size";
 
-                if (argumentos.Length >= 1)
+                if (argumentos.Length < 3)
                 {
-                    string argumento1 = argumentos[1];
-                    string argumento2 = argumentos[2];
-
-                    caminhoPadrao = program.GetDiretorio(definirDiretorio, caminhoPadrao, argumento1);
-                    tamanhoPadrao = program.GetTamanhoArquivo(definirTamanhoArquivo, tamanhoPadrao, argumento2);
-
-                    VerTempoGasto verTempoGasto = new();
-
-                    string caminhoCompleto = Path.Combine(caminhoPadrao, nomeArquivo);
-
-                    program.MostrarDiretorio(caminhoPadrao);
-                    program.MostarTamanhoArquivo(tamanhoPadrao);
-
-                    int valorIntTamanhoPadrao = Convert.ToInt32(tamanhoPadrao);
-                    verTempoGasto.Conometro(caminhoCompleto, valorIntTamanhoPadrao);
+                    Console.WriteLine("\nUso correto: Desafio_01.exe --output=<caminho> --size=<tamanho_em_MB>");
+                    return;
                 }
-                else
-                {
-                    Console.WriteLine("Por favor, forneça dois argumentos.");
-                }
+
+                string argumento1 = argumentos[1];
+                string argumento2 = argumentos[2];
+
+                if (!program.TryObterDiretorio(definirDiretorio, argumento1, out string caminho)) return;
+                if (!program.TryObterTamanhoArquivo(definirTamanho, argumento2, out double tamanho)) return;
+
+                program.MostrarDiretorio(caminho);
+                program.MostrarTamanhoArquivo(tamanho);
+
+                string caminhoCompleto = Path.Combine(caminho, nomeArquivo);
+
+                VerTempoGasto verTempoGasto = new();
+                int tamanhoInt = Convert.ToInt32(tamanho);
+                verTempoGasto.Cronometro(caminhoCompleto, tamanhoInt);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\nException: {ex.Message}");
+                Console.WriteLine($"\nErro inesperado: {ex.Message}");
             }
         }
     }
