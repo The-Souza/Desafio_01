@@ -42,6 +42,7 @@ namespace Desafio_01
                 Console.WriteLine("Falha ao gerar arquivo final devido ao tamanho excedido.");
                 return;
             }
+
             Console.WriteLine(separador);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nArquivo JSON criado com sucesso!");
