@@ -56,18 +56,25 @@ Desafio_01.exe --output=C:\Destino --size=200
 ### Exemplo de saída:
 
 ```
-Tamanho escolhido: 200MB
 Local de destino: C:\Destino
+
 O diretório existe.
 
-------------------------------------------------------------------------------------------------------------------------
+Tamanho escolhido: 400MB
 
-Iniciando operação...
-Gerando lista...
-Objetos criados: 9324000
-...
-Tempo gasto: 00:01:23.456
-Arquivo JSON criado.
+-------------------------------------------------------------------------------------------
+
+Iniciando geração dos dados...
+Objetos criados: 18648000
+Gerando arquivos temporários [##################################################] 100%
+Combinando arquivos temporários [##################################################] 100%
+Tamanho final do arquivo: 400,14MB
+
+-------------------------------------------------------------------------------------------
+
+Arquivo JSON criado com sucesso!
+
+Tempo gasto: 00:00:10.139
 ```
 
 ---

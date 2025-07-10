@@ -19,6 +19,10 @@ namespace Desafio_01
 
             LimparPastaTemporaria();
 
+            string separador = "\n------------------------------------------------------------------------------------------------------------------------";
+
+            Console.WriteLine(separador);
+
             int quantidadeIteracoes = tamanhoDesejadoMb * IteracoesPorMb;
             GeradorStringAlfanumerico geradorStrings = new();
 
@@ -42,6 +46,7 @@ namespace Desafio_01
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nArquivo JSON criado com sucesso!");
             Console.ResetColor();
+            Console.WriteLine(separador);
         }
 
         private void LimparPastaTemporaria()
@@ -65,10 +70,12 @@ namespace Desafio_01
             }
         }
 
-        private List<ParametrosJSON> CriarListaDeParametrosJson(GeradorStringAlfanumerico gerador, int quantidade)
+        private List<ParametrosJSON> CriarListaDeParametrosJson(GeradorStringAlfanumerico gerador, int quantidadeDeIteracoes)
         {
-            var lista = new List<ParametrosJSON>(quantidade);
-            for (int i = 0; i < quantidade; i++)
+            var lista = new List<ParametrosJSON>(quantidadeDeIteracoes);
+
+            int totalObjetos = quantidadeDeIteracoes * 4;
+            for (int i = 0; i < quantidadeDeIteracoes; i++)
             {
                 lista.Add(new ParametrosJSON
                 {
@@ -78,6 +85,7 @@ namespace Desafio_01
                     D = gerador.GerarString()
                 });
             }
+            Console.WriteLine($"Objetos criados: {totalObjetos}");
             return lista;
         }
 
@@ -129,7 +137,9 @@ namespace Desafio_01
                     var dados = JsonSerializer.Deserialize<List<ParametrosJSON>>(conteudo);
 
                     if (dados != null)
+                    {
                         dadosCombinados.AddRange(dados);
+                    }
 
                     File.Delete(arquivosTemporarios[i]);
                     AtualizarProgresso("Combinando arquivos temporários", i + 1, arquivosTemporarios.Count);

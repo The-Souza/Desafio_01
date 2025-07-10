@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-
 namespace Desafio_01
 {
     public class Program
@@ -9,13 +6,15 @@ namespace Desafio_01
 
         public static void Main(string[] args)
         {
-            if (!ValidarArgumentos(args, out string diretorio, out double tamanhoMb))
+            Program program = new();
+
+            if (!program.ValidarArgumentos(args, out string diretorio, out double tamanhoMb))
             {
                 Console.WriteLine("Uso: --output=<caminho> --size=<tamanho_em_MB>");
                 return;
             }
 
-            ExibirInformacoes(diretorio, tamanhoMb);
+            program.ExibirInformacoes(diretorio, tamanhoMb);
 
             var caminhoCompleto = Path.Combine(diretorio, NomeArquivo);
             var cronometro = new VerTempoGasto();
@@ -30,7 +29,7 @@ namespace Desafio_01
             }
         }
 
-        private static bool ValidarArgumentos(string[] args, out string diretorio, out double tamanhoMb)
+        private bool ValidarArgumentos(string[] args, out string diretorio, out double tamanhoMb)
         {
             diretorio = string.Empty;
             tamanhoMb = 0;
@@ -42,23 +41,26 @@ namespace Desafio_01
             var tamanhoStr = ObterValorParametro(args[1], "--size=");
 
             if (string.IsNullOrWhiteSpace(diretorio) || string.IsNullOrWhiteSpace(tamanhoStr) || !double.TryParse(tamanhoStr, out tamanhoMb))
+            {
                 return false;
-
+            }
             return true;
         }
 
-        private static string ObterValorParametro(string argumento, string prefixo)
+        private string ObterValorParametro(string argumento, string prefixo)
         {
             if (argumento.StartsWith(prefixo, StringComparison.OrdinalIgnoreCase))
-                return argumento.Substring(prefixo.Length);
+            {
+                return argumento[prefixo.Length..];
+            }
             return string.Empty;
         }
 
-        private static void ExibirInformacoes(string diretorio, double tamanhoMb)
+        private void ExibirInformacoes(string diretorio, double tamanhoMb)
         {
             Console.WriteLine($"\nLocal de destino: {diretorio}");
             Console.WriteLine(Directory.Exists(diretorio) ? "\nO diretório existe." : "\nO diretório não existe.");
-            Console.WriteLine($"Tamanho escolhido: {(tamanhoMb < 1000 ? $"{tamanhoMb}MB" : $"{tamanhoMb / 1000:F2}GB")}");
+            Console.WriteLine($"\nTamanho escolhido: {(tamanhoMb < 1000 ? $"{tamanhoMb}MB" : $"{tamanhoMb / 1000:F2}GB")}");
         }
     }
 }

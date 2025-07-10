@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Desafio_01
 {
@@ -18,8 +17,10 @@ namespace Desafio_01
 
         private void ExibirTempoGasto(TimeSpan tempo)
         {
-            if (tempo.TotalSeconds < 1) return;
-
+            if (tempo.TotalSeconds < 1)
+            {
+                return;
+            }
             string tempoFormatado = tempo.ToString(@"hh\:mm\:ss\.fff");
             Console.WriteLine($"\nTempo gasto: {tempoFormatado}");
         }
