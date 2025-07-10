@@ -4,110 +4,123 @@ namespace Desafio_01
 {
     public class GeradorArquivoJSON
     {
-        private const string CaminhoPadraoArquivosTemporarios = @"C:\\Users\\guilherme2000925\\Desktop\\PastaDestino\\ArquivosTemporarios";
+        private const string PastaTemporaria = @"C:\Users\guilherme2000925\Desktop\PastaDestino\ArquivosTemporarios";
+        private const double LimiteMb = 400.0;
+        private const double Tolerancia = 0.01;
+        private const int TamanhoStringAlfanumerica = 6;
+        private const int IteracoesPorMb = 11655;
 
-        private List<ParametrosJSON> CriarListaDeParametrosJson(GeradorStringAlfanumerico gerador, int quantidadeDeIteracoes)
+        public void GerarArquivoJson(string caminhoDestino, int tamanhoDesejadoMb)
         {
-            List<ParametrosJSON> parametros = [];
-            Console.WriteLine("Gerando lista...");
-
-            int totalObjetos = quantidadeDeIteracoes * 4;
-            for (int i = 0; i < quantidadeDeIteracoes; i++)
+            if (tamanhoDesejadoMb > LimiteMb + LimiteMb * Tolerancia)
             {
-                parametros.Add(new ParametrosJSON
+                Console.WriteLine($"\nArquivo não gerado: tamanho ultrapassa limite de {LimiteMb}MB.");
+                return;
+            }
+
+            LimparPastaTemporaria();
+
+            int quantidadeIteracoes = tamanhoDesejadoMb * IteracoesPorMb;
+            var geradorStrings = new GeradorStringAlfanumerico();
+
+            Console.WriteLine("\nIniciando geração dos dados...");
+
+            var dados = CriarParametros(geradorStrings, quantidadeIteracoes);
+
+            int numThreads = Environment.ProcessorCount;
+            int divisao = dados.Count / numThreads;
+            var arquivosTemporarios = new List<string>();
+            var opcoesJson = new JsonSerializerOptions { WriteIndented = true };
+
+            EscreverArquivosTemporarios(dados, numThreads, divisao, arquivosTemporarios, opcoesJson);
+
+            if (!CombinarArquivosTemporarios(caminhoDestino, arquivosTemporarios, opcoesJson, tamanhoDesejadoMb))
+            {
+                Console.WriteLine("Falha ao gerar arquivo final devido ao tamanho excedido.");
+                return;
+            }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nArquivo JSON criado com sucesso!");
+            Console.ResetColor();
+        }
+
+        private void LimparPastaTemporaria()
+        {
+            if (!Directory.Exists(PastaTemporaria))
+            {
+                Directory.CreateDirectory(PastaTemporaria);
+                return;
+            }
+
+            foreach (var arquivo in Directory.GetFiles(PastaTemporaria))
+            {
+                try
                 {
-                    A = gerador.GetAlfanumericoAleatoria(),
-                    B = gerador.GetAlfanumericoAleatoria(),
-                    C = gerador.GetAlfanumericoAleatoria(),
-                    D = gerador.GetAlfanumericoAleatoria()
+                    File.Delete(arquivo);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao apagar arquivo temporário {arquivo}: {ex.Message}");
+                }
+            }
+        }
+
+        private List<ParametrosJSON> CriarParametros(GeradorStringAlfanumerico gerador, int quantidade)
+        {
+            var lista = new List<ParametrosJSON>(quantidade);
+            for (int i = 0; i < quantidade; i++)
+            {
+                lista.Add(new ParametrosJSON
+                {
+                    A = gerador.Gerar(),
+                    B = gerador.Gerar(),
+                    C = gerador.Gerar(),
+                    D = gerador.Gerar()
                 });
             }
-            Console.WriteLine($"Objetos criados: {totalObjetos}");
-            return parametros;
+            return lista;
         }
 
-        private void AtualizarProgresso(string mensagem, int atual, int total)
+        private void EscreverArquivosTemporarios(List<ParametrosJSON> dados, int numThreads, int divisao, List<string> arquivos, JsonSerializerOptions opcoes)
         {
-            int porcentagem = (int)(((double)atual / total) * 100);
-            string barraDeProgresso = "[" + new string('#', porcentagem / 2) + new string('-', 50 - porcentagem / 2) + "]";
-            Console.Write($"\r{mensagem} | {barraDeProgresso} {porcentagem}%");
-        }
+            object trava = new();
 
-        private long ObterTamanhoArquivo(string caminhoArquivo)
-        {
-            long bytes = new FileInfo(caminhoArquivo).Length;
-            double tamanhoMB = Math.Round((double)bytes / (1024 * 1024), 2);
-
-            string tamanhoFormatado = tamanhoMB < 1000 ? $"{tamanhoMB}MB" : $"{Math.Round(tamanhoMB / 1000, 2)}GB";
-            Console.WriteLine($"\nTamanho do arquivo (após fechamento): {tamanhoFormatado}");
-            return bytes;
-        }
-
-        private void ApagarTemporarios(string caminho)
-        {
-            if (!Directory.Exists(caminho))
+            Parallel.For(0, numThreads, i =>
             {
-                Console.WriteLine($"\nA pasta '{caminho}' não existe.");
-                return;
-            }
+                int inicio = i * divisao;
+                int fim = (i == numThreads - 1) ? dados.Count : (i + 1) * divisao;
 
-            foreach (string arquivo in Directory.GetFiles(caminho))
-            {
-                try 
-                { 
-                    if (File.Exists(arquivo))
-                    { 
-                        File.Delete(arquivo); 
-                    }
+                var subset = dados.GetRange(inicio, fim - inicio);
+                string caminho = Path.Combine(PastaTemporaria, $"dadosTemp_{i}.json");
+
+                string json = JsonSerializer.Serialize(subset, opcoes);
+                File.WriteAllText(caminho, json);
+
+                lock (trava)
+                {
+                    arquivos.Add(caminho);
+                    AtualizarProgresso("Gerando arquivos temporários", arquivos.Count, numThreads);
                 }
-                catch (Exception ex) 
-                { 
-                    Console.WriteLine($"Erro ao excluir {arquivo}: {ex.Message}"); 
-                }
-            }
+            });
+
+            Console.WriteLine();
         }
 
-        private void ValidarETentarCombinar(string pastaDestino, JsonSerializerOptions opcoes, List<string> arquivosTemporarios, double limiteMbComTolerancia)
+        private bool CombinarArquivosTemporarios(string caminhoDestino, List<string> arquivosTemporarios, JsonSerializerOptions opcoes, int tamanhoDesejadoMb)
         {
-            long tamanhoTotalBytes = CalcularTamanhoArquivos(CaminhoPadraoArquivosTemporarios, ".json");
-            double tamanhoTotalMb = Math.Round((double)tamanhoTotalBytes / (1024 * 1024), 2);
+            double limiteComTolerancia = LimiteMb + (LimiteMb * Tolerancia);
 
-            if (tamanhoTotalMb > limiteMbComTolerancia)
+            long tamanhoAtualBytes = arquivosTemporarios.Sum(arquivo => new FileInfo(arquivo).Length);
+            double tamanhoAtualMb = tamanhoAtualBytes / (1024.0 * 1024.0);
+
+            if (tamanhoAtualMb > limiteComTolerancia)
             {
-                ApagarTemporarios(CaminhoPadraoArquivosTemporarios);
-                Console.WriteLine("Tamanho excede o limite. Arquivo não gerado.");
-                return;
+                Console.WriteLine("Tamanho dos arquivos temporários excede o limite permitido.");
+                LimparPastaTemporaria();
+                return false;
             }
 
-            try
-            {
-                var dadosCombinados = CombinarArquivosTemporarios(arquivosTemporarios);
-                string jsonFinal = JsonSerializer.Serialize(dadosCombinados, opcoes);
-                File.WriteAllText(pastaDestino, jsonFinal);
-                ObterTamanhoArquivo(pastaDestino);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erro ao salvar o arquivo combinado: {ex.Message}");
-            }
-        }
-
-        private long CalcularTamanhoArquivos(string caminho, string extensao)
-        {
-            if (!Directory.Exists(caminho))
-            {
-                Console.WriteLine("O caminho especificado não existe.");
-                return 0;
-            }
-
-            return new DirectoryInfo(caminho)
-                .GetFiles()
-                .Where(f => extensao.Contains(f.Extension, StringComparison.CurrentCultureIgnoreCase))
-                .Sum(f => f.Length);
-        }
-
-        private List<ParametrosJSON> CombinarArquivosTemporarios(List<string> arquivosTemporarios)
-        {
             var dadosCombinados = new List<ParametrosJSON>();
 
             for (int i = 0; i < arquivosTemporarios.Count; i++)
@@ -116,103 +129,48 @@ namespace Desafio_01
                 {
                     string conteudo = File.ReadAllText(arquivosTemporarios[i]);
                     var dados = JsonSerializer.Deserialize<List<ParametrosJSON>>(conteudo);
-                    if (dados != null) 
-                    {
-                        dadosCombinados.AddRange(dados);
-                    }
-                    File.Delete(arquivosTemporarios[i]);
 
+                    if (dados != null)
+                        dadosCombinados.AddRange(dados);
+
+                    File.Delete(arquivosTemporarios[i]);
                     AtualizarProgresso("Combinando arquivos temporários", i + 1, arquivosTemporarios.Count);
                     Thread.Sleep(10);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"\nErro ao combinar arquivos: {ex.Message}");
+                    Console.WriteLine($"Erro ao combinar arquivo temporário {arquivosTemporarios[i]}: {ex.Message}");
+                    return false;
                 }
             }
             Console.WriteLine();
-            return dadosCombinados;
-        }
 
-        private Action<int> GerarArquivosTemporarios(List<ParametrosJSON> parametros, int numThreads, int tamanhoDivisao, List<string> arquivos, JsonSerializerOptions opcoes, object trava)
-        {
-            return i =>
-            {
-                int inicio = i * tamanhoDivisao;
-                int fim = (i == numThreads - 1) ? parametros.Count : (i + 1) * tamanhoDivisao;
-                var parte = parametros.GetRange(inicio, fim - inicio);
-
-                string caminho = $"{CaminhoPadraoArquivosTemporarios}\\dadosTemporarios_{i}.json";
-                string json = JsonSerializer.Serialize(parte, opcoes);
-
-                lock (trava)
-                { 
-                    arquivos.Add(caminho);
-                }
-                File.WriteAllText(caminho, json);
-            };
-        }
-
-        private void EscreverEmParalelo(List<ParametrosJSON> parametros, int numThreads, int tamanhoDivisao, JsonSerializerOptions opcoes, List<string> arquivos)
-        {
-            object trava = new();
-            var gerador = GerarArquivosTemporarios(parametros, numThreads, tamanhoDivisao, arquivos, opcoes, trava);
-
-            Parallel.For(0, numThreads, i =>
-            {
-                gerador(i);
-                lock (trava)
-                {
-                    AtualizarProgresso("Gerando arquivos temporários", i + 1, numThreads);
-                    Thread.Sleep(100);
-                }
-            });
-            Console.WriteLine();
-        }
-
-        private void EscreverArquivoJsonFinal(string pastaDestino, GeradorStringAlfanumerico gerador, int quantidadeDeIteracoes, double limiteMbComTolerancia)
-        {
             try
             {
-                string separador = "\n------------------------------------------------------------------------------------------------------------------------";
-                Console.WriteLine(separador);
-                Console.WriteLine("Iniciando operação...\n");
-
-                var parametros = CriarListaDeParametrosJson(gerador, quantidadeDeIteracoes);
-                int numThreads = Environment.ProcessorCount;
-                int tamanhoDivisao = parametros.Count / numThreads;
-                var opcoes = new JsonSerializerOptions { WriteIndented = true };
-                List<string> arquivosTemporarios = [];
-
-                EscreverEmParalelo(parametros, numThreads, tamanhoDivisao, opcoes, arquivosTemporarios);
-                ValidarETentarCombinar(pastaDestino, opcoes, arquivosTemporarios, limiteMbComTolerancia);
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("\nOperação concluída!");
-                Console.ResetColor();
-                Console.WriteLine(separador);
+                string jsonFinal = JsonSerializer.Serialize(dadosCombinados, opcoes);
+                File.WriteAllText(caminhoDestino, jsonFinal);
+                Console.WriteLine($"Tamanho final do arquivo: {ObterTamanhoFormatado(caminhoDestino)}");
+                return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\nErro na operação: {ex.Message}");
+                Console.WriteLine($"Erro ao salvar arquivo final: {ex.Message}");
+                return false;
             }
         }
 
-        public void GerarArquivoJson(string pastaDestino, int tamanhoDesejadoEmMb)
+        private void AtualizarProgresso(string mensagem, int atual, int total)
         {
-            GeradorStringAlfanumerico gerador = new();
-            double limiteMb = 400.0;
-            double limiteMbComTolerancia = limiteMb + (limiteMb * 0.01);
-            int iteracoesPorMb = 11655;
-            int quantidadeDeIteracoes = tamanhoDesejadoEmMb * iteracoesPorMb;
+            int percentual = (int)((double)atual / total * 100);
+            string barra = "[" + new string('#', percentual / 2) + new string('-', 50 - percentual / 2) + "]";
+            Console.Write($"\r{mensagem} {barra} {percentual}%");
+        }
 
-            if (tamanhoDesejadoEmMb > limiteMbComTolerancia)
-            {
-                Console.WriteLine($"\nArquivo não gerado, passou do limite de {limiteMbComTolerancia}MB.");
-                return;
-            }
-            EscreverArquivoJsonFinal(pastaDestino, gerador, quantidadeDeIteracoes, limiteMbComTolerancia);
-            Console.WriteLine("\nArquivo JSON criado.");
+        private string ObterTamanhoFormatado(string caminhoArquivo)
+        {
+            long tamanhoBytes = new FileInfo(caminhoArquivo).Length;
+            double tamanhoMb = tamanhoBytes / (1024.0 * 1024.0);
+            return tamanhoMb < 1000 ? $"{tamanhoMb:F2} MB" : $"{tamanhoMb / 1000:F2} GB";
         }
     }
 }
