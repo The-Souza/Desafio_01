@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Desafio_01": {
+      "commandName": "Project",
+      "commandLineArgs": "--output=C:\\\\Users\\\\guilherme2000925\\\\Desktop\\\\PastaDestino --size=400"
+    }
+  }
+}
