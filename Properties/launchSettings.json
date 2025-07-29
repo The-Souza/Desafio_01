@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Desafio_01": {
+    "Gerador_Arquivo_Json": {
       "commandName": "Project",
       "commandLineArgs": "--output=C:\\Users\\guilherme2000925\\Desktop\\PastaDestino --size=400"
     }

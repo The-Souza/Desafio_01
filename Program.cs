@@ -1,4 +1,4 @@
-namespace Desafio_01
+namespace Gerador_Arquivo_Json
 {
     public class Program
     {

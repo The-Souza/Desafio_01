@@ -50,7 +50,7 @@ A principal classe do projeto. Responsável por:
 ### Comando:
 
 ```bash
-Desafio_01.exe --output=C:\Destino --size=200
+Gerador_Arquivo_Json.exe --output=C:\Destino --size=200
 ```
 
 ### Exemplo de saída:

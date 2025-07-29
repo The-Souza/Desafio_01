@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Desafio_01
+namespace Gerador_Arquivo_Json
 {
     public class GeradorStringAlfanumerico
     {
