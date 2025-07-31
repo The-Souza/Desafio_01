@@ -2,8 +2,6 @@ namespace Gerador_Arquivo_Json
 {
     public class Program
     {
-        private const string NomeArquivo = "listaAlfanumericos.json";
-
         public static void Main(string[] args)
         {
             Program program = new();
@@ -16,12 +14,11 @@ namespace Gerador_Arquivo_Json
 
             program.ExibirInformacoes(diretorio, tamanhoMb);
 
-            var caminhoCompleto = Path.Combine(diretorio, NomeArquivo);
             var cronometro = new VerTempoGasto();
 
             try
             {
-                cronometro.Cronometro(caminhoCompleto, (int)tamanhoMb);
+                cronometro.Cronometro(diretorio, (int)tamanhoMb);
             }
             catch (Exception ex)
             {

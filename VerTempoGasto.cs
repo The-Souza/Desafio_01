@@ -4,12 +4,12 @@ namespace Gerador_Arquivo_Json
 {
     public class VerTempoGasto
     {
-        public void Cronometro(string caminhoArquivo, int tamanhoMb)
+        public void Cronometro(string diretorio, int tamanhoMb)
         {
             var gerador = new GeradorArquivoJSON();
             var stopwatch = Stopwatch.StartNew();
 
-            gerador.GerarArquivoJson(caminhoArquivo, tamanhoMb);
+            gerador.GerarArquivoJson(diretorio, tamanhoMb);
 
             stopwatch.Stop();
             ExibirTempoGasto(stopwatch.Elapsed);

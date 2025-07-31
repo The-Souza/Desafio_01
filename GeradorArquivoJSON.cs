@@ -4,12 +4,13 @@ namespace Gerador_Arquivo_Json
 {
     public class GeradorArquivoJSON
     {
-        private const string PastaTemporaria = @"C:\Users\guilherme2000925\Desktop\PastaDestino\ArquivosTemporarios";
+        private const string NomeArquivo = "listaAlfanumericos.json";
+        private const string PastaTemporaria = "ArquivosTemporarios";
         private const double LimiteMb = 400.0;
         private const double Tolerancia = 0.01;
         private const int IteracoesPorMb = 11655;
 
-        public void GerarArquivoJson(string caminhoDestino, int tamanhoDesejadoMb)
+        public void GerarArquivoJson(string diretorio, int tamanhoDesejadoMb)
         {
             if (tamanhoDesejadoMb > LimiteMb + (LimiteMb * Tolerancia))
             {
@@ -17,10 +18,14 @@ namespace Gerador_Arquivo_Json
                 return;
             }
 
-            LimparPastaTemporaria();
+            string caminhoDestino = Path.Combine(diretorio, NomeArquivo);
+            string caminhoPastaTemporaria = Path.Combine(diretorio, PastaTemporaria);
+
+            Directory.CreateDirectory(caminhoPastaTemporaria);
+
+            LimparPastaTemporaria(caminhoPastaTemporaria);
 
             string separador = "\n------------------------------------------------------------------------------------------------------------------------";
-
             Console.WriteLine(separador);
 
             int quantidadeIteracoes = tamanhoDesejadoMb * IteracoesPorMb;
@@ -35,7 +40,7 @@ namespace Gerador_Arquivo_Json
             var arquivosTemporarios = new List<string>();
             var opcoesJson = new JsonSerializerOptions { WriteIndented = true };
 
-            EscreverArquivosTemporarios(dados, numThreads, divisao, arquivosTemporarios, opcoesJson);
+            EscreverArquivosTemporarios(caminhoPastaTemporaria, dados, numThreads, divisao, arquivosTemporarios, opcoesJson);
 
             if (!CombinarArquivosTemporarios(caminhoDestino, arquivosTemporarios, opcoesJson))
             {
@@ -49,15 +54,9 @@ namespace Gerador_Arquivo_Json
             Console.ResetColor();
         }
 
-        private void LimparPastaTemporaria()
+        private void LimparPastaTemporaria(string caminhoPastaTemporaria)
         {
-            if (!Directory.Exists(PastaTemporaria))
-            {
-                Directory.CreateDirectory(PastaTemporaria);
-                return;
-            }
-
-            foreach (var arquivo in Directory.GetFiles(PastaTemporaria))
+            foreach (var arquivo in Directory.GetFiles(caminhoPastaTemporaria))
             {
                 try
                 {
@@ -85,11 +84,12 @@ namespace Gerador_Arquivo_Json
                     D = gerador.GerarString()
                 });
             }
+
             Console.WriteLine($"Objetos criados: {totalObjetos}");
             return lista;
         }
 
-        private void EscreverArquivosTemporarios(List<ParametrosJSON> dados, int numThreads, int divisao, List<string> arquivos, JsonSerializerOptions opcoes)
+        private void EscreverArquivosTemporarios(string caminhoPastaTemporaria, List<ParametrosJSON> dados, int numThreads, int divisao, List<string> arquivos, JsonSerializerOptions opcoes)
         {
             object trava = new();
 
@@ -99,7 +99,7 @@ namespace Gerador_Arquivo_Json
                 int fim = (i == numThreads - 1) ? dados.Count : (i + 1) * divisao;
 
                 var parte = dados.GetRange(inicio, fim - inicio);
-                string caminho = Path.Combine(PastaTemporaria, $"dadosTemp_{i}.json");
+                string caminho = Path.Combine(caminhoPastaTemporaria, $"dadosTemp_{i}.json");
 
                 string json = JsonSerializer.Serialize(parte, opcoes);
                 File.WriteAllText(caminho, json);
@@ -123,7 +123,6 @@ namespace Gerador_Arquivo_Json
             if (tamanhoAtualMb > limiteComTolerancia)
             {
                 Console.WriteLine("Tamanho dos arquivos temporários excede o limite permitido.");
-                LimparPastaTemporaria();
                 return false;
             }
 
@@ -155,6 +154,11 @@ namespace Gerador_Arquivo_Json
 
             try
             {
+                if (File.Exists(caminhoDestino))
+                {
+                    File.Delete(caminhoDestino);
+                }
+
                 string jsonFinal = JsonSerializer.Serialize(dadosCombinados, opcoes);
                 File.WriteAllText(caminhoDestino, jsonFinal);
                 Console.WriteLine($"Tamanho final do arquivo: {ObterTamanhoFormatado(caminhoDestino)}");
