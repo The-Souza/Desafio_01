@@ -2,7 +2,7 @@
   "profiles": {
     "Gerador_Arquivo_Json": {
       "commandName": "Project",
-      "commandLineArgs": "--output=C:\\Users\\guilherme2000925\\Desktop\\PastaDestino --size=400"
+      "commandLineArgs": "--output=<caminho> --size=<tamanho_em_MB>","
     }
   }
 }

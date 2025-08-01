@@ -5,6 +5,7 @@ namespace Gerador_Arquivo_Json
     public class GeradorArquivoJSON
     {
         private const string NomeArquivo = "listaAlfanumericos.json";
+        private const string PastaDestino = "PastaDestino";
         private const string PastaTemporaria = "ArquivosTemporarios";
         private const double LimiteMb = 400.0;
         private const double Tolerancia = 0.01;
@@ -18,10 +19,12 @@ namespace Gerador_Arquivo_Json
                 return;
             }
 
-            string caminhoDestino = Path.Combine(diretorio, NomeArquivo);
+            string caminhoPastaDestino = Path.Combine(diretorio, PastaDestino);
+            string caminhoDestino = Path.Combine(caminhoPastaDestino, NomeArquivo);
             string caminhoPastaTemporaria = Path.Combine(diretorio, PastaTemporaria);
 
             Directory.CreateDirectory(caminhoPastaTemporaria);
+            Directory.CreateDirectory(caminhoPastaDestino);
 
             LimparPastaTemporaria(caminhoPastaTemporaria);
 
@@ -53,6 +56,7 @@ namespace Gerador_Arquivo_Json
             Console.WriteLine("\nArquivo JSON criado com sucesso!");
             Console.ResetColor();
         }
+
 
         private void LimparPastaTemporaria(string caminhoPastaTemporaria)
         {
